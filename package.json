@@ -1,0 +1,8 @@
+{
+  "name": "kar-international-infotech",
+  "version": "0.1.0",
+  "private": true,
+  "description": "KAR International Infotech 3D parallax website",
+  "scripts": {"dev": "node server.mjs", "start": "node server.mjs", "check": "node --check dist/app.js"},
+  "engines": {"node": ">=20"}
+}
