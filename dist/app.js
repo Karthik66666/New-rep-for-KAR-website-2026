@@ -10,7 +10,8 @@
   const artTag = document.querySelector('.art-tag');
   const aboutGraphic = document.querySelector('.about-graphic');
   const aboutSticker = document.querySelector('.about-sticker');
-  let userPaused = false;
+  const aboutLogo = document.querySelector('.about-background-logo');
+  let userPaused = null;
   let paused = reduceMotion.matches;
   let scrollY = window.scrollY;
   let pointer = { x: 0, y: 0 };
@@ -18,23 +19,17 @@
 
   document.querySelector('#year').textContent = new Date().getFullYear();
   function updateMotion() {
-    paused = userPaused || reduceMotion.matches;
-    body.classList.toggle('motion-paused', userPaused);
-    body.classList.toggle('motion-reduced', reduceMotion.matches);
+    paused = userPaused ?? reduceMotion.matches;
+    body.classList.toggle('motion-paused', userPaused === true);
+    body.classList.toggle('motion-reduced', reduceMotion.matches && userPaused !== false);
     motionButton.setAttribute('aria-pressed', String(paused));
     motionButton.innerHTML = paused ? 'Enable motion <span aria-hidden="true">▷</span>' : 'Pause motion <span aria-hidden="true">Ⅱ</span>';
-    if (reduceMotion.matches) {
-      motionButton.disabled = true;
-      motionButton.innerHTML = 'Reduced motion <span aria-hidden="true">✓</span>';
-      motionButton.title = 'Your device’s reduced-motion preference is enabled.';
-    } else {
-      motionButton.disabled = false;
-      motionButton.removeAttribute('title');
-    }
+    motionButton.disabled = false;
+    motionButton.removeAttribute('title');
     updateParallax();
     requestSculptureFrame();
   }
-  motionButton.addEventListener('click', () => { userPaused = !userPaused; updateMotion(); });
+  motionButton.addEventListener('click', () => { userPaused = !paused; updateMotion(); });
   reduceMotion.addEventListener('change', updateMotion);
 
   function updateScroll() {
@@ -52,7 +47,13 @@
     const rect = aboutGraphic.getBoundingClientRect();
     const offset = paused ? 0 : Math.max(-35, Math.min(35, (window.innerHeight / 2 - rect.top - rect.height / 2) * .09));
     aboutSticker.style.transform = `translate3d(0,${offset}px,0) rotate(9deg)`;
+    const logoProgress = paused ? 1 : Math.max(0, Math.min(1,
+      (window.innerHeight - rect.top) / Math.max(1, window.innerHeight * .75)));
+    const logoEase = logoProgress * logoProgress * (3 - 2 * logoProgress);
+    aboutLogo.style.transform = `translate3d(0,${(1 - logoEase) * 100}px,0) rotate(-10deg)`;
+
   }
+  window.addEventListener('resize', updateScroll);
   window.addEventListener('scroll', () => {
     if (!scrollFrame) scrollFrame = requestAnimationFrame(updateScroll);
   }, { passive: true });
@@ -69,7 +70,20 @@
     const revealObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); revealObserver.unobserve(entry.target); } });
     }, { threshold: .08 });
-    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+    // Wait until the introduction is further inside the viewport before rising.
+    const introObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          introObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: .15, rootMargin: `0px 0px -${Math.round(window.innerHeight * .28)}px 0px` });
+    introObserver.observe(document.querySelector('#intro'));
+    document.querySelectorAll('.reveal').forEach(el => {
+      // The introduction reveals as one card, then staggers its contents.
+      if (!el.closest('#intro')) revealObserver.observe(el);
+    });
   }
 
   const menuButton = document.querySelector('.menu-toggle');
@@ -97,7 +111,6 @@
       if (!details.open) return;
       services.forEach(other => { if (other !== details) other.open = false; });
       document.querySelector('#visual-number').textContent = String(index + 1).padStart(2, '0');
-      document.querySelector('.wire-cube').style.filter = `hue-rotate(${index * 28}deg)`;
     });
   });
 
@@ -200,16 +213,6 @@
     }
     return {positions,normals,indices};
   }
-  function sphereMesh() {
-    const positions=[],normals=[],indices=[],rows=24,cols=32;
-    for(let i=0;i<=rows;i++) for(let j=0;j<=cols;j++) {
-      const a=i/rows*Math.PI,b=j/cols*Math.PI*2;
-      const n=[Math.sin(a)*Math.cos(b),Math.cos(a),Math.sin(a)*Math.sin(b)];
-      normals.push(...n);positions.push(...n.map(x=>x*.23));
-      if(i<rows&&j<cols) {const k=i*(cols+1)+j;indices.push(k,k+1,k+cols+1,k+1,k+cols+2,k+cols+1);}
-    }
-    return {positions,normals,indices};
-  }
   try {
     gl=canvas.getContext('webgl',{alpha:true,antialias:true,powerPreference:'low-power',premultipliedAlpha:false});
     if(!gl) throw new Error('WebGL is unavailable');
@@ -224,11 +227,11 @@
       varying vec3 vNormal; varying vec3 vPosition;
       uniform float uAccent;
       vec3 environment(vec3 r){
-        vec3 sky=mix(vec3(.035,.052,.038),vec3(.67,.73,.61),smoothstep(-.4,.9,r.y));
+        vec3 sky=mix(vec3(.035,.045,.065),vec3(.70,.73,.78),smoothstep(-.4,.9,r.y));
         float box1=pow(max(0.,1.-abs(dot(r,normalize(vec3(.8,.2,.4))))),24.);
         float box2=pow(max(0.,dot(r,normalize(vec3(-.5,.8,1.)))),30.);
         float strip=pow(max(0.,1.-abs(r.y-.3)),65.)*.7;
-        return sky+vec3(.95,.98,.88)*box1*.85+box2*vec3(1.3,1.35,1.25)+strip*vec3(.6,.75,.4);
+        return sky+vec3(.95,.97,1.)*box1*.85+box2*vec3(1.3,1.33,1.38)+strip*vec3(.78,.68,.58);
       }
       void main(){
         vec3 n=normalize(vNormal); if(!gl_FrontFacing)n=-n;
@@ -238,11 +241,11 @@
         float diff=max(0.,dot(n,light));
         float fresnel=pow(1.-max(0.,dot(n,view)),3.);
         float spec=pow(max(0.,dot(n,normalize(light+view))),75.);
-        vec3 metal=environment(reflectDir)*vec3(.58,.63,.56)+vec3(.08,.095,.07)*diff;
-        metal=mix(metal,vec3(.095,.13,.075),fresnel*.32)+vec3(.85)*spec*.5;
+        vec3 metal=environment(reflectDir)*vec3(.58,.61,.66)+vec3(.08,.09,.11)*diff;
+        metal=mix(metal,vec3(.075,.095,.13),fresnel*.32)+vec3(.85)*spec*.5;
         float ao=.78+.22*smoothstep(-1.2,1.3,vPosition.z);
         metal*=ao;
-        vec3 accent=vec3(.54,.82,.13)*(.4+diff*.6)+vec3(.8)*spec*.8;
+        vec3 accent=vec3(.973,.416,.016)*(.4+diff*.6)+vec3(.8)*spec*.8;
         vec3 color=mix(metal,accent,uAccent);
         color=color/(color+vec3(.62)); color=pow(color,vec3(.83));
         gl_FragColor=vec4(color,1.);
@@ -269,7 +272,7 @@
       buffers.index=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,buffers.index);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(mesh.indices),gl.STATIC_DRAW);
       buffers.count=mesh.indices.length;return buffers;
     }
-    const knot=upload(knotMesh()),sphere=upload(sphereMesh());
+    const knot=upload(knotMesh());
     gl.enable(gl.DEPTH_TEST);gl.clearColor(0,0,0,0);
     gl.uniformMatrix4fv(uniforms.uView,false,translation(0,0,-8));
     function draw(mesh,model,accent) {
@@ -297,12 +300,11 @@
       previousTime=time;lastDraw=time;
       smoothX+=(pointer.x-smoothX)*.07;smoothY+=(pointer.y-smoothY)*.07;
       const scroll=paused?0:Math.min(scrollY/Math.max(hero.offsetHeight,1),1.4);
-      const spin=paused?0:elapsed*.105;
+      const spin=paused?0:elapsed*.28;
       let model=multiply(rotateZ(-.36+scroll*.2),multiply(rotateX(.48+smoothY*.13+scroll*.35),rotateY(.35+spin+smoothX*.2)));
       model=multiply(translation(-.05,Math.sin(elapsed*.7)*(!paused?.045:0)+scroll*.2,0),model);
       gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
       draw(knot,model,0);
-      draw(sphere,translation(1.7+Math.sin(spin)*.1,-1.32+Math.cos(elapsed*.65)*(!paused?.07:0),.6),1);
       if(!paused) requestSculptureFrame();
     };
     initialized=true;
