@@ -96,7 +96,7 @@ body.motion-reduced #intro,body.motion-reduced #intro .reveal,body.motion-reduce
 }
 
 /* Gold mirror puzzle: dark mechanical bodies and unequal outer panels. */
-.service-visual{background:radial-gradient(ellipse at 40% 30%,#fff 0%,#ffffffb3 45%,transparent 78%),#f8f9fb;border-color:#dce1e8}
+.service-visual{background:radial-gradient(ellipse at 40% 30%,#fffdfb 0%,#fffaf580 45%,transparent 78%),#fff8f0;border-color:#eadfce}
 .service-visual::after{content:none}
 .service-visual .visual-grid{background-image:linear-gradient(#11182709 1px,transparent 1px),linear-gradient(90deg,#11182709 1px,transparent 1px)}
 .service-visual .visual-caption{color:#626d7c}

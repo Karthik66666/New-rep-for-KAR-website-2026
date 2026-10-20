@@ -133,7 +133,8 @@
   let visible = false;
   let paused = document.body.classList.contains('motion-paused') || document.body.classList.contains('motion-reduced');
   function canAnimate() {
-    return !paused && visible && !document.hidden && panel.getBoundingClientRect().width > 0;
+    return !paused && visible && !document.hidden &&
+      (panel.dataset.activeService || '0') === '0' && panel.getBoundingClientRect().width > 0;
   }
   function schedule() {
     if (!frame && canAnimate()) frame = requestAnimationFrame(animate);
@@ -187,6 +188,7 @@
     schedule();
   }
   document.addEventListener('kar:motionchange', event => { paused = event.detail.paused; sync(); });
+  document.addEventListener('kar:servicechange', sync);
   document.addEventListener('visibilitychange', sync);
   window.addEventListener('resize', sync, {passive:true});
   if ('IntersectionObserver' in window) {

@@ -28,12 +28,16 @@ The root `vercel.json` selects the Other framework preset, skips install and bui
 - `dist/styles.css`: responsive layouts, CSS 3D cube, process illustrations and motion preferences.
 - `dist/app.js`: WebGL torus knot, scroll parallax, progressive reveals and browser-local enquiry brief.
 - `dist/puzzle.js`: gold mirror puzzle in the services panel; layer turns scramble the cube, then reverse to solve it. Animation pauses offscreen, when the tab is hidden, and with the site's motion controls.
+- `dist/services.js` and `dist/services.css`: scroll-driven service chapters, native disclosure headings and previous/next controls. A sticky presentation is used when the descriptions fit the viewport; smaller screens use a stable-height reading sequence. Short landscape screens keep the illustration in normal flow so it cannot cover the text.
+- `dist/service-visuals.js` and `dist/service-visuals.css`: gold 3D gears, app phone and growth illustration, matched to the active service and paused when hidden or offscreen.
 - `server.mjs`: loopback-only development server.
 - `.openai/hosting.json`: private Sites project identity and static asset directory.
 
 ## Motion and accessibility
 
 The sculpture responds to scroll and pointer movement. Background, label and story artwork move at different scroll rates. Rendering is capped at approximately 30 frames per second with a device pixel ratio cap, and stops when the hero is offscreen or the document is hidden. Visitors can pause motion. The site respects the device’s reduced-motion preference. WebGL failure leaves an SVG sculpture fallback; the content and enquiry flow work without WebGL. Fonts have local fallbacks.
+
+Service descriptions and benefit lists are present in the initial HTML. Without JavaScript, all four native disclosure panels start open. With JavaScript, scrolling selects one service and its matching 3D illustration; headings and visual controls also support direct navigation. Focus inside a service description prevents automatic closing while a keyboard user is interacting with it.
 
 ## Enquiry status
 

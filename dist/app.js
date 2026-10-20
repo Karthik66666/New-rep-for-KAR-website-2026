@@ -106,15 +106,6 @@
   window.matchMedia('(min-width: 761px)').addEventListener('change', event => { if (event.matches) closeMenu(); });
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && !mobileNav.hidden) { closeMenu(); menuButton.focus(); } });
 
-  const services = [...document.querySelectorAll('.service')];
-  services.forEach((details, index) => {
-    details.addEventListener('toggle', () => {
-      if (!details.open) return;
-      services.forEach(other => { if (other !== details) other.open = false; });
-      document.querySelector('#visual-number').textContent = String(index + 1).padStart(2, '0');
-    });
-  });
-
   const dialog = document.querySelector('#enquiry-dialog');
   const form = document.querySelector('#enquiry-form');
   const result = document.querySelector('#brief-result');
