@@ -28,6 +28,7 @@
     motionButton.removeAttribute('title');
     updateParallax();
     requestSculptureFrame();
+    document.dispatchEvent(new CustomEvent('kar:motionchange', { detail: { paused } }));
   }
   motionButton.addEventListener('click', () => { userPaused = !paused; updateMotion(); });
   reduceMotion.addEventListener('change', updateMotion);

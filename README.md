@@ -27,6 +27,7 @@ The root `vercel.json` selects the Other framework preset, skips install and bui
 - `dist/index.html`: content, navigation, service accordions and enquiry dialog.
 - `dist/styles.css`: responsive layouts, CSS 3D cube, process illustrations and motion preferences.
 - `dist/app.js`: WebGL torus knot, scroll parallax, progressive reveals and browser-local enquiry brief.
+- `dist/puzzle.js`: gold mirror puzzle in the services panel; layer turns scramble the cube, then reverse to solve it. Animation pauses offscreen, when the tab is hidden, and with the site's motion controls.
 - `server.mjs`: loopback-only development server.
 - `.openai/hosting.json`: private Sites project identity and static asset directory.
 
