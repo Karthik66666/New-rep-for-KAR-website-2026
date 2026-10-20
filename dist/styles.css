@@ -122,3 +122,31 @@ body.motion-reduced #intro,body.motion-reduced #intro .reveal,body.motion-reduce
 .puzzle-preview-top{transform:rotateX(90deg) translateZ(90px)}
 .puzzle-ready .puzzle-preview{display:none}
 @media(max-width:760px){.service-visual{display:flex;min-height:330px}.services-layout{row-gap:32px}.puzzle-scene{--puzzle-depth:48px;height:280px}.visual-caption{bottom:20px;font-size:11px}}
+
+/* Navbar brand name and the portfolio destination. */
+.header .brand{gap:12px}
+.header .brand-name{color:var(--accent);font:700 22px/1.12 var(--heading);letter-spacing:-.4px}
+.header .brand-name>span{display:block;font:inherit;letter-spacing:inherit;margin:0}
+.works{border-top:1px solid var(--line);background:#fff8f0}
+.works .section-label{color:#a74308}
+.works-heading{display:flex;align-items:center;justify-content:space-between;gap:28px;margin-top:30px}
+.works h2{font-size:clamp(36px,4vw,62px);letter-spacing:-.05em;line-height:1.15}
+.works-heading>p{font-size:16px;line-height:1.7;color:var(--muted)}
+@media(max-width:1050px){
+  .desktop-nav,.nav-cta{display:none}
+  .menu-toggle{display:flex;flex-direction:column;gap:6px;width:44px;height:44px;flex-shrink:0;align-items:center;justify-content:center;background:transparent;z-index:102}
+  .menu-toggle span{width:22px;height:1px;background:var(--ink);transition:transform .2s}
+  .menu-open .menu-toggle span:first-child{transform:translateY(3.5px) rotate(45deg)}
+  .menu-open .menu-toggle span:last-child{transform:translateY(-3.5px) rotate(-45deg)}
+  .mobile-nav:not([hidden]){display:flex;position:fixed;inset:108px 0 0;background:var(--paper);z-index:95;padding:24px var(--pad) max(24px,env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;flex-direction:column;gap:0}
+  .mobile-nav>a{font:500 30px/1.2 var(--heading);letter-spacing:-1px;padding:20px 0;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:20px}
+  .mobile-nav>a>span{font:13px var(--body);letter-spacing:0}
+}
+@media(max-width:760px){
+  .header .brand{gap:10px}
+  .header .brand-name{font-size:18px}
+  .mobile-nav:not([hidden]){top:83px}
+  .works-heading{display:block}
+  .works-heading>p{margin-top:18px;font-size:15px}
+}
+@media(max-width:360px){.header .brand-name{font-size:16px}}

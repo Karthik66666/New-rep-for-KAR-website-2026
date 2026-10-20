@@ -103,7 +103,7 @@
     menuButton.setAttribute('aria-label', opening ? 'Close navigation' : 'Open navigation');
   });
   mobileNav.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
-  window.matchMedia('(min-width: 761px)').addEventListener('change', event => { if (event.matches) closeMenu(); });
+  window.matchMedia('(min-width: 1051px)').addEventListener('change', event => { if (event.matches) closeMenu(); });
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && !mobileNav.hidden) { closeMenu(); menuButton.focus(); } });
 
   const dialog = document.querySelector('#enquiry-dialog');
