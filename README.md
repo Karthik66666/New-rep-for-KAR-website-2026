@@ -16,6 +16,12 @@ Open http://127.0.0.1:4173. Set `PORT` to change the local port. All deployable 
 npm run check
 ```
 
+## Vercel hosting
+
+Connect `Karthik66666/New-rep-for-KAR-website-2026` and use `main` as the production branch. Leave Root Directory at the repository root (blank or `.`); `kar-international-infotech` is the local checkout folder, not a folder inside this repository.
+
+The root `vercel.json` selects the Other framework preset, skips install and build commands, and publishes `dist/` directly. This site needs no build step. After changing settings, redeploy the latest commit from Vercel's Deployments tab. If pushes do not create deployments, check that the Vercel GitHub app has access to this repository and the project is connected to this repository and branch.
+
 ## Files
 
 - `dist/index.html`: content, navigation, service accordions and enquiry dialog.
