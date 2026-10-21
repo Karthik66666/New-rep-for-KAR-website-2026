@@ -111,6 +111,8 @@ body.motion-reduced #intro,body.motion-reduced #intro .reveal,body.motion-reduce
 .puzzle-gold::before,.puzzle-gold::after{content:'';position:absolute;pointer-events:none;border-radius:2px}
 .puzzle-gold::before{inset:0;border:1px solid rgb(255 237 168 / calc(.18 + var(--face-light,.65)*.24));box-shadow:inset 0 1px 0 #fff9dc52,inset 0 -1px 0 #96712425}
 .puzzle-gold::after{inset:2px;background:radial-gradient(ellipse 130% 100% at var(--shine-x,28%) var(--shine-y,18%),rgb(255 253 238 / calc(var(--glint,.35)*.14)),transparent 82%)}
+.puzzle-self-reflection{position:absolute;inset:1px;width:calc(100% - 2px);height:calc(100% - 2px);overflow:hidden;pointer-events:none;opacity:.26;filter:blur(.25px);border-radius:2px}
+.puzzle-self-reflection polygon{stroke:#9e812d;stroke-width:.65;stroke-linejoin:round}
 .visual-caption,.visual-index{z-index:2}
 .puzzle-preview{left:50%;top:50%;width:180px;height:180px;margin:-90px 0 0 -90px;transform:translateZ(var(--puzzle-depth,120px)) rotateX(-24deg) rotateY(32deg) rotateZ(-6deg)}
 .puzzle-preview-face{position:absolute;inset:0;display:grid;grid-template-columns:2fr 3fr 4fr;grid-template-rows:3fr 4fr 2fr;gap:3px;padding:2px;background:#14110c;backface-visibility:hidden}

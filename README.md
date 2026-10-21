@@ -28,6 +28,8 @@ The root `vercel.json` selects the Other framework preset, skips install and bui
 - `dist/styles.css`: responsive layouts, CSS 3D cube, process illustrations and motion preferences.
 - `dist/app.js`: WebGL torus knot, scroll parallax, progressive reveals and browser-local enquiry brief.
 - `dist/puzzle.js`: gold mirror puzzle in the services panel; layer turns scramble the cube, then reverse to solve it. Animation pauses offscreen, when the tab is hidden, and with the site's motion controls.
+
+  Gold faces also show approximate single-bounce reflections of neighboring gold panels when the puzzle forms concave shapes. Reflections are projected into face-local SVG overlays, clipped to each panel, and refreshed at most about eight times per second alongside the existing animation loop. The solved convex cube keeps its studio highlights without an artificial reflection underneath it.
 - `dist/services.js` and `dist/services.css`: scroll-driven service chapters, native disclosure headings and previous/next controls. A sticky presentation is used when the descriptions fit the viewport; smaller screens use a stable-height reading sequence. Short landscape screens keep the illustration in normal flow so it cannot cover the text.
 - `dist/service-visuals.js` and `dist/service-visuals.css`: gold 3D gears, app phone and growth illustration, matched to the active service and paused when hidden or offscreen.
 - `server.mjs`: loopback-only development server.

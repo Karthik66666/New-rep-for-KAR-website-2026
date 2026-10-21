@@ -20,6 +20,14 @@
   const reflection = unit([keyLight[0],keyLight[1],keyLight[2]+1]);
   const fillReflection = unit([fillLight[0],fillLight[1],fillLight[2]+1]);
   const goldColor = [211,175,55]; // Metallic Gold #D3AF37, before lighting.
+  const svgNamespace = 'http://www.w3.org/2000/svg';
+  const camera = [0,0,850];
+  const subtract = (a,b) => a.map((value,index) => value-b[index]);
+  const addScaled = (point,axis,distance) => point.map((value,index) => value+axis[index]*distance);
+  function readDepth() {
+    return window.getComputedStyle ? parseFloat(window.getComputedStyle(scene).getPropertyValue('--puzzle-depth')) || 120 : 120;
+  }
+  let reflectionDepth = readDepth();
   const faceAxes = {
     front:[[0,0,1],[1,0,0],[0,1,0]],
     back:[[0,0,-1],[-1,0,0],[0,1,0]],
@@ -38,6 +46,7 @@
     const orientation = product(turn, piece.orientation);
     piece.displayOrientation = orientation;
     const point = vector(turn, piece.position);
+    piece.displayPosition = point;
     // CSS matrix3d is column-major; our rotation matrices are row-major.
     piece.element.style.transform = `matrix3d(${[
       orientation[0],orientation[3],orientation[6],0,
@@ -52,8 +61,14 @@
       product(rotation(1,angle*Math.PI/180),rotation(2,-6*Math.PI/180)));
     pieces.forEach(piece => {
       const world = product(stage,piece.displayOrientation);
+      const centre = addScaled(vector(stage,piece.displayPosition),[0,0,1],reflectionDepth);
       piece.goldFaces.forEach(face => {
         const [normal,tangent,vertical] = face.axes.map(axis => vector(world,axis));
+        face.worldNormal = normal;
+        face.worldTangent = tangent;
+        face.worldVertical = vertical;
+        const faceOffset = vector(world,face.localCentre);
+        face.worldCentre = centre.map((value,index) => value+faceOffset[index]);
         const key = Math.max(0,dot(normal,keyLight));
         const fill = Math.max(0,dot(normal,fillLight));
         const rim = Math.max(0,dot(normal,rimLight));
@@ -73,6 +88,7 @@
           '--shine-y':`${Math.round(50 + shineY*60)}%`,
           '--glow-angle':`${Math.round(Math.atan2(shineY,shineX)*180/Math.PI + 90)}deg`
         };
+        face.color = [values['--gold-r'],values['--gold-g'],values['--gold-b']].join(' ');
         Object.entries(values).forEach(([name,value]) => {
           if (face.previous[name] !== value) {
             face.element.style.setProperty(name,value);
@@ -80,6 +96,75 @@
           }
         });
       });
+    });
+  }
+  function clipPolygon(points,signedDistance) {
+    const result = [];
+    points.forEach((point,index) => {
+      const next = points[(index+1)%points.length];
+      const a = signedDistance(point), b = signedDistance(next);
+      if (a >= 0) result.push(point);
+      if ((a >= 0) !== (b >= 0)) {
+        const t = a/(a-b);
+        result.push(point.map((value,axis) => value+(next[axis]-value)*t));
+      }
+    });
+    return result;
+  }
+  function reflectedPolygon(receiver,donor) {
+    const normal = receiver.worldNormal, centre = receiver.worldCentre;
+    let corners = [[-1,-1],[1,-1],[1,1],[-1,1]].map(([x,y]) =>
+      addScaled(addScaled(donor.worldCentre,donor.worldTangent,x*donor.width/2),donor.worldVertical,y*donor.height/2));
+    corners = clipPolygon(corners,point => dot(subtract(point,centre),normal)-.05);
+    if (corners.length < 3) return null;
+    const virtualCentre = addScaled(donor.worldCentre,normal,-2*dot(subtract(donor.worldCentre,centre),normal));
+    const virtualNormal = addScaled(donor.worldNormal,normal,-2*dot(donor.worldNormal,normal));
+    if (dot(virtualNormal,subtract(camera,virtualCentre)) <= 0) return null;
+    const numerator = dot(subtract(centre,camera),normal);
+    let valid = true;
+    let points = corners.map(point => {
+      const reflected = addScaled(point,normal,-2*dot(subtract(point,centre),normal));
+      const ray = subtract(reflected,camera);
+      const denominator = dot(ray,normal);
+      if (Math.abs(denominator) < .001) { valid = false; return [0,0]; }
+      const t = numerator/denominator;
+      if (t <= 0 || t > 1.001) { valid = false; return [0,0]; }
+      const hit = subtract(addScaled(camera,ray,t),centre);
+      return [dot(hit,receiver.worldTangent)+receiver.width/2,dot(hit,receiver.worldVertical)+receiver.height/2];
+    });
+    if (!valid) return null;
+    for (const distance of [p=>p[0],p=>receiver.width-p[0],p=>p[1],p=>receiver.height-p[1]]) {
+      points = clipPolygon(points,distance);
+      if (points.length < 3) return null;
+    }
+    const area = Math.abs(points.reduce((sum,point,index) => {
+      const next = points[(index+1)%points.length];
+      return sum+point[0]*next[1]-next[0]*point[1];
+    },0))/2;
+    if (area < 1.5) return null;
+    return {points,color:donor.color,depth:Math.hypot(...subtract(camera,virtualCentre))};
+  }
+  function updateReflections() {
+    // Approximate one planar bounce from neighboring gold pieces; no floor clone.
+    reflectiveFaces.forEach(receiver => {
+      const facing = dot(receiver.worldNormal,unit(subtract(camera,receiver.worldCentre)));
+      const candidates = facing > .08 ? reflectiveFaces.flatMap(donor => {
+        if (donor === receiver || donor.piece === receiver.piece) return [];
+        const reflected = reflectedPolygon(receiver,donor);
+        return reflected ? [reflected] : [];
+      }).sort((a,b)=>a.depth-b.depth).slice(0,6).reverse() : [];
+      candidates.forEach((candidate,index) => {
+        let polygon = receiver.polygons[index];
+        if (!polygon) {
+          polygon = document.createElementNS(svgNamespace,'polygon');
+          receiver.surface.append(polygon);
+          receiver.polygons.push(polygon);
+        }
+        polygon.style.display = '';
+        polygon.setAttribute('points',candidate.points.map(point=>point.map(value=>value.toFixed(2)).join(',')).join(' '));
+        polygon.setAttribute('fill',`rgb(${candidate.color})`);
+      });
+      receiver.polygons.slice(candidates.length).forEach(polygon => { polygon.style.display = 'none'; });
     });
   }
 
@@ -109,7 +194,16 @@
         left:`${-width/2}px`,top:`${-height/2}px`,transform:placement
       });
       element.append(face);
-      if (gold) goldFaces.push({element:face,axes:faceAxes[name],previous:{}});
+      if (gold) {
+        const surface = document.createElementNS(svgNamespace,'svg');
+        surface.setAttribute('class','puzzle-self-reflection');
+        surface.setAttribute('viewBox',`0 0 ${width} ${height}`);
+        surface.setAttribute('aria-hidden','true');
+        surface.setAttribute('focusable','false');
+        face.append(surface);
+        const distance = ['front','back'].includes(name) ? d/2 : ['left','right'].includes(name) ? w/2 : h/2;
+        goldFaces.push({element:face,axes:faceAxes[name],localCentre:faceAxes[name][0].map(value=>value*distance),width,height,surface,polygons:[],previous:{}});
+      }
     });
     const piece = {
       element,
@@ -118,18 +212,21 @@
       position:indices.map((index, axis) => (cuts[axis][index] + cuts[axis][index+1]) / 2),
       orientation:identity()
     };
+    goldFaces.forEach(face => { face.piece = piece; });
     transform(piece);
     pieces.push(piece);
     fragment.append(element);
   }
   cube.append(fragment);
+  const reflectiveFaces = pieces.flatMap(piece => piece.goldFaces);
   updateLighting();
+  updateReflections();
   scene.classList.add('puzzle-ready');
 
   const scramble = [[0,1,1],[1,0,-1],[2,-1,1],[0,-1,-1],[1,1,1],[2,0,-1]];
   const moves = [...scramble, ...scramble.slice().reverse().map(([axis,layer,direction]) => [axis,layer,-direction])];
   let moveIndex = 0, phase = 'rest', phaseTime = 0, active = null;
-  let frame = 0, lastTime = 0, rotationTime = 0;
+  let frame = 0, lastTime = 0, rotationTime = 0, lastReflection = 0;
   let visible = false;
   let paused = document.body.classList.contains('motion-paused') || document.body.classList.contains('motion-reduced');
   function canAnimate() {
@@ -185,12 +282,18 @@
       }
     }
     updateLighting(angle);
+    if (time-lastReflection >= 120) { updateReflections(); lastReflection = time; }
     schedule();
   }
   document.addEventListener('kar:motionchange', event => { paused = event.detail.paused; sync(); });
   document.addEventListener('kar:servicechange', sync);
   document.addEventListener('visibilitychange', sync);
-  window.addEventListener('resize', sync, {passive:true});
+  window.addEventListener('resize', () => {
+    reflectionDepth = readDepth();
+    updateLighting(32+rotationTime*.006);
+    updateReflections();
+    sync();
+  }, {passive:true});
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(entries => {
       visible = entries[0].isIntersecting;
