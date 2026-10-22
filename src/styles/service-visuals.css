@@ -1,0 +1,95 @@
+/* Solid local service models. Preserve depth through every animated wrapper. */
+.service-scene{position:absolute;inset:0;display:grid;place-items:center;transform-style:preserve-3d;transform:translate3d(0,13px,0) scale(.97);transition:transform .65s cubic-bezier(.22,1,.36,1)}
+.service-scene.is-active{transform:translate3d(0,0,0) scale(1)}
+.service-scene[hidden]{display:none!important}
+.service-model{scale:var(--service-model-scale,1)}
+.sv-stage{position:relative;width:320px;max-width:100%;height:320px;perspective:900px;pointer-events:none;transform-style:preserve-3d}
+.sv-model-origin{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+.sv-solid,.sv-cylinder,.sv-gear-mount,.sv-gear-rotor,.sv-phone-float,.sv-phone-card,.sv-bar-mount,.sv-bar-lift,.sv-arrow-orbit,.sv-growth-arrow{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}
+.sv-solid-face{position:absolute;display:block;backface-visibility:hidden;border:1px solid #876719;border-radius:2px;background:linear-gradient(145deg,#f3e0a2 0%,#ddbd59 26%,#d3af37 61%,#c39e2c 100%);box-shadow:inset 1px 1px 0 #fff5cc9c,inset -1px -1px 1px #99731c42}
+.sv-solid-face::after{content:'';position:absolute;inset:1px;border:1px solid #ffeab24a;border-radius:1px;pointer-events:none}
+.sv-face-right{background:linear-gradient(145deg,#e0c367,#c6a132 77%,#d4b148)}
+.sv-face-left,.sv-face-back{background:linear-gradient(145deg,#d7b54e,#b99229)}
+.sv-face-top{background:linear-gradient(145deg,#fff0bb,#dfc36a 58%,#d3af37)}
+.sv-face-bottom{background:linear-gradient(145deg,#d0ad3d,#af8924)}
+
+/* Equal-tooth gears have front/back discs, a segmented cylindrical wall and solid teeth. */
+.sv-gears-assembly{transform:translateY(-3px) rotateX(-19deg) rotateY(14deg) rotateZ(-8deg)}
+.sv-gear-mount{transform:translate3d(-55px,-18px,0)}
+.sv-gear-mount-second{transform:translate3d(55px,18px,0)}
+.sv-gear-rotor{animation:sv-gear-clockwise 16s linear infinite;animation-play-state:paused}
+.sv-gear-rotor-second{transform:rotateZ(15deg);animation-name:sv-gear-counterclockwise}
+.sv-gear-tooth .sv-solid-face{border-color:#96721c;border-radius:3px}
+.sv-gear-disc{display:block;position:absolute;border:1px solid #a58221;border-radius:50%;backface-visibility:hidden;background:radial-gradient(circle at 34% 25%,#fff1b7 0%,#e2c568 34%,#d3af37 66%,#bd9628 100%);box-shadow:inset 0 0 0 4px #ecd58d,inset 0 0 0 5px #b38b247d,inset 2px 3px 3px #fff3c29c}
+.sv-gear-disc::before{content:'';position:absolute;inset:12px;border:1px solid #8f6e1e66;border-radius:50%;box-shadow:0 1px 0 #fff1bc91}
+.sv-gear-disc::after{content:'';position:absolute;inset:5px;border-radius:50%;background:linear-gradient(125deg,transparent 19%,#fff9df58 40%,transparent 64%)}
+.sv-gear-disc-back{background:linear-gradient(145deg,#e3c66c,#bd982f)}
+.sv-cylinder-edge{display:block;position:absolute;backface-visibility:hidden;background:linear-gradient(0deg,#a58227,rgb(var(--edge-gold,190 151 43)) 28%,#f2d98d 100%)}
+.sv-gear-hub{position:absolute;left:-14px;top:-14px;width:28px;height:28px;transform:translateZ(10.6px);border:3px solid #f0d789;border-radius:50%;background:radial-gradient(circle at 40% 35%,#334054,#111b2a 75%);box-shadow:0 0 0 1px #95701b,inset 1px 1px 2px #0005;backface-visibility:hidden}
+.sv-gear-hub-pin{position:absolute;inset:7px;background:#f86a04;border-radius:50%;box-shadow:0 1px 1px #fff8}
+@keyframes sv-gear-clockwise{to{transform:rotateZ(360deg)}}
+@keyframes sv-gear-counterclockwise{to{transform:rotateZ(-345deg)}}
+
+/* A gold handset with physical thickness, camera, side key and inset app screen. */
+.sv-phone-assembly{transform:translateY(0) rotateX(-10deg) rotateY(-24deg) rotateZ(8deg)}
+.sv-phone-float{animation:sv-phone-hover 6s ease-in-out infinite;animation-play-state:paused}
+.sv-phone-body>.sv-solid-face{border-radius:14px;border-color:#b18b26}
+.sv-phone-body>.sv-face-front{background:#152133;box-shadow:inset 0 0 0 3px #dec066,inset 0 0 0 4px #90701e}
+.sv-phone-body>.sv-face-back{background:linear-gradient(145deg,#f7e4a9,#d3af37 52%,#c4a039)}
+.sv-phone-body>.sv-face-right,.sv-phone-body>.sv-face-left{border-radius:4px;background:linear-gradient(90deg,#ae8622,#ead185 33%,#d0aa35 72%,#9e781f)}
+.sv-phone-body>.sv-face-top,.sv-phone-body>.sv-face-bottom{border-radius:4px}
+.sv-phone-body>.sv-face-front::after,.sv-phone-body>.sv-face-back::after{border-radius:12px}
+.sv-app-screen{position:absolute;inset:6px;overflow:hidden;border-radius:10px;background:#fbfaf6;color:#182335;display:flex;flex-direction:column;padding:7px 8px;font-family:var(--body,Arial,sans-serif)}
+.sv-app-status{display:flex;justify-content:space-between;align-items:center;font-size:6px;height:8px;line-height:1}
+.sv-app-status b{font-weight:700}
+.sv-app-signal{font-size:8px;letter-spacing:1px}
+.sv-phone-notch{position:absolute;left:50%;top:0;width:38px;height:8px;background:#152133;border-radius:0 0 7px 7px;transform:translateX(-50%)}
+.sv-app-header{display:flex;align-items:center;gap:5px;margin-top:10px}
+.sv-app-mark{display:grid;place-items:center;width:17px;height:17px;border-radius:5px;background:#f86a04;color:white;font-size:12px;line-height:1;font-weight:800}
+.sv-app-greeting{font-size:6px;font-weight:600;color:#637084}
+.sv-app-title{font-size:11px;line-height:1.25;letter-spacing:-.4px;white-space:pre-line;margin-top:9px}
+.sv-app-feature{display:flex;flex-direction:column;gap:3px;border:1px solid #e9d99f;border-radius:7px;padding:7px 8px;margin-top:9px;background:linear-gradient(125deg,#f7e9bb,#e4c766);color:#5c4817}
+.sv-app-feature>span{font-size:4.5px;font-weight:700;letter-spacing:.6px}
+.sv-app-feature>strong{font-size:24px;letter-spacing:-1px;line-height:1.1;color:#182335}
+.sv-app-feature>small{font-size:5px}
+.sv-app-actions{display:flex;justify-content:space-between;margin-top:9px;gap:5px}
+.sv-app-action{display:flex;align-items:center;flex-direction:column;gap:3px;flex:1}
+.sv-app-action i{display:grid;place-items:center;width:19px;height:18px;background:#172337;color:#edcc6b;font-size:11px;border-radius:5px;font-style:normal}
+.sv-app-action:nth-child(2) i{background:#f86a04;color:#fff}
+.sv-app-action>small{font-size:4.5px;color:#637084}
+.sv-app-homebar{height:2px;width:30px;margin:auto auto 0;background:#172337;border-radius:2px}
+.sv-phone-back-mark{position:absolute;inset:0;display:grid;place-items:center;color:#8c6a1c;font:700 17px var(--heading,Arial,sans-serif);letter-spacing:2px}
+.sv-phone-camera .sv-face-front{background:#192333;border-color:#bfa04b;border-radius:7px}
+.sv-phone-camera-lens{position:absolute;left:6px;top:6px;width:10px;height:10px;border:2px solid #596275;background:radial-gradient(circle at 35% 35%,#7794b7,#0b1525 60%);border-radius:50%;box-shadow:0 13px 0 -2px #0b1525,0 13px 0 0 #596275}
+.sv-phone-side-button .sv-solid-face{border-radius:1px}
+.sv-phone-card{animation:sv-phone-card-glide 5s ease-in-out infinite;animation-play-state:paused}
+.sv-phone-card-1{animation-delay:-2.5s}
+.sv-app-card-body>.sv-solid-face{border-radius:9px}
+.sv-app-card-body>.sv-face-front{background:linear-gradient(135deg,#1d2b42,#101b2d);border-color:#d8b84e}
+.sv-app-card-symbol{position:absolute;inset:0;display:grid;place-items:center;font:500 28px var(--body,Arial,sans-serif);color:#f1d37e}
+.sv-phone-card-1 .sv-app-card-symbol{color:#ff9c55}
+@keyframes sv-phone-hover{0%,100%{transform:translateY(5px)}50%{transform:translateY(-7px)}}
+@keyframes sv-phone-card-glide{0%,100%{translate:0 3px}50%{translate:0 -5px}}
+
+/* Solid growth columns and a gold chevron arrow travel around a 3D orbit. */
+.sv-growth-assembly{transform:translateY(3px) rotateX(-13deg) rotateY(-23deg)}
+.sv-growth-platform>.sv-solid-face{border-color:#bfa149}
+.sv-growth-platform>.sv-face-top{background:linear-gradient(145deg,#f8edc8,#e5cc7d)}
+.sv-bar-lift{animation:sv-bars-rise 4.5s cubic-bezier(.45,0,.3,1) infinite;animation-delay:var(--bar-delay,0s);animation-play-state:paused}
+.sv-growth-bar>.sv-face-front{background:linear-gradient(115deg,#f0d991,#d3af37 68%,#c39c2c)}
+.sv-bar-detail{position:absolute;left:9px;right:9px;top:14px;display:flex;flex-direction:column;gap:4px}
+.sv-bar-detail i{height:2px;background:#fff4cc9c;border-radius:1px}
+.sv-bar-detail i:nth-child(2){width:75%;background:#9e761a5c}
+.sv-bar-detail i:nth-child(3){width:45%;background:#f86a04b3}
+.sv-growth-orbit-ring{position:absolute;left:-105px;top:-105px;width:210px;height:210px;border:1px solid #bd9b3c6e;border-radius:50%;transform:translateY(-72px) rotateX(90deg);backface-visibility:visible}
+.sv-arrow-orbit{animation:sv-arrow-around 18s linear infinite;animation-play-state:paused}
+.sv-growth-arrow{transform:translate3d(0,-72px,91px) rotateY(14deg) rotateZ(-24deg)}
+.sv-arrow-shaft>.sv-solid-face,.sv-arrow-head>.sv-solid-face{border-color:#b28a24;border-radius:3px;background:linear-gradient(145deg,#fff0ba,#debd58 42%,#cfa933)}
+.sv-arrow-shaft>.sv-face-top,.sv-arrow-head>.sv-face-top{background:#f4e2a3}
+.sv-arrow-shaft>.sv-face-bottom,.sv-arrow-head>.sv-face-bottom{background:#b48d27}
+@keyframes sv-bars-rise{0%,100%{transform:scaleY(.9)}50%{transform:scaleY(1)}}
+@keyframes sv-arrow-around{from{transform:rotateY(-18deg)}to{transform:rotateY(342deg)}}
+
+.visuals-running .service-scene.is-active .sv-gear-rotor,.visuals-running .service-scene.is-active .sv-phone-float,.visuals-running .service-scene.is-active .sv-phone-card,.visuals-running .service-scene.is-active .sv-bar-lift,.visuals-running .service-scene.is-active .sv-arrow-orbit{animation-play-state:running}
+@media(max-width:760px){.sv-stage{height:300px}.sv-gears-assembly{transform:translateY(-3px) rotateX(-19deg) rotateY(14deg) rotateZ(-8deg)}.sv-phone-assembly{transform:rotateX(-10deg) rotateY(-20deg) rotateZ(7deg)}}
+@media(prefers-reduced-motion:reduce){.service-scene{transition:none}.sv-gear-rotor,.sv-phone-float,.sv-phone-card,.sv-bar-lift,.sv-arrow-orbit{animation:none!important}}

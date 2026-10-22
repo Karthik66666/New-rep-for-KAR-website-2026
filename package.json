@@ -2,7 +2,20 @@
   "name": "kar-international-infotech",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "KAR International Infotech 3D parallax website",
-  "scripts": {"dev": "node server.mjs", "start": "node server.mjs", "check": "node --check dist/app.js && node --check dist/puzzle.js && node --check dist/services.js && node --check dist/service-visuals.js"},
-  "engines": {"node": ">=20"}
+  "scripts": {
+    "dev": "npm run build && node server.mjs",
+    "start": "node server.mjs",
+    "build": "node scripts/build.mjs",
+    "check": "node --check server.mjs && node --check scripts/build.mjs && node --check src/scripts/app.js && node --check src/scripts/puzzle.js && node --check src/scripts/services.js && node --check src/scripts/service-visuals.js",
+    "lint": "eslint src/scripts scripts server.mjs",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "globals": "^15.0.0"
+  },
+  "engines": {"node": ">=20.12"}
 }

@@ -1,0 +1,47 @@
+/* Service chapters retain native scrolling and native headings/content. */
+.service-body p+p{margin-top:16px}
+.services-enhanced{overflow-anchor:none}
+.service-benefits{padding-left:19px;margin:20px 0;color:#d1d5db;font-size:15px;line-height:1.7}
+.service-benefits li+li{margin-top:7px}
+.service-benefits li::marker{color:var(--accent)}
+.services-enhanced .services-layout{align-items:start;position:relative}
+.services-enhanced .service-visual{position:sticky;top:var(--services-top,132px);height:var(--service-card-height,460px);min-height:0;align-self:start}
+.services-enhanced .service-list{min-width:0}
+.services-enhanced .service summary{padding:15px 0;gap:15px;min-height:66px}
+.services-enhanced .service h3{font-size:clamp(23px,2.1vw,30px);line-height:1.2}
+.services-enhanced .service-number{margin-top:6px}
+.services-enhanced .service-body{padding:5px 0 24px 30px;max-width:none}
+.services-enhanced .service-body p{font-size:16px;line-height:1.75}
+.services-enhanced .service[open] .service-body{animation:service-content-rise 1.3s cubic-bezier(.22,1,.36,1) both;transform:translate3d(0,var(--service-rise,0px),0)}
+@keyframes service-content-rise{from{opacity:0;transform:translate3d(0,42px,0)}to{opacity:1;transform:translate3d(0,var(--service-rise,0px),0)}}
+.services-pinned .service-list{position:sticky;top:var(--services-top,132px);align-self:start}
+.service-scene{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;transform-style:preserve-3d}
+.service-scene.is-active{animation:service-scene-rise .95s cubic-bezier(.22,1,.36,1) both}
+@keyframes service-scene-rise{from{transform:translate3d(0,32px,0)}to{transform:translate3d(0,0,0)}}
+.service-visual .visual-caption{top:58px;left:26px;right:26px;bottom:auto;font-size:13px;font-weight:600;letter-spacing:.4px;text-align:left}
+.service-visual-controls{position:absolute;bottom:20px;left:24px;right:24px;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.service-visual-controls>button{width:44px;height:44px;display:grid;place-items:center;background:#fff9;border:1px solid #e3d5c0;border-radius:50%;font-size:22px;color:#473c2c}
+.service-visual-controls>button:hover:not(:disabled){background:#f86a04;color:#111827;border-color:#f86a04}
+.service-visual-controls>button:disabled{opacity:.35;cursor:default}
+.service-visual-dots{display:flex;align-items:center;gap:10px}
+.service-visual-dots button{display:grid;place-items:center;width:32px;height:36px;background:transparent;border-radius:20px;color:#786b54;font-size:12px}
+.service-visual-dots button[aria-pressed=true]{background:#111827;color:#fff8f0;font-weight:700}
+.service-scene[data-service-scene="0"] .puzzle-scene{scale:var(--service-model-scale,1)}
+body.motion-paused .service-body,body.motion-reduced .service-body,body.motion-paused .service-scene,body.motion-reduced .service-scene{animation:none!important;opacity:1!important;transform:none!important}
+@media(max-width:1059px){.services-enhanced .services-layout{grid-template-columns:minmax(260px,.8fr) minmax(0,1.2fr);gap:36px}}
+@media(max-width:760px){
+  .services-enhanced .services-layout{display:block}
+  .services-enhanced .service-visual{--service-model-scale:.72;z-index:4;height:300px;margin-bottom:28px;top:var(--services-top,107px);box-shadow:0 12px 24px #11182715}
+  .service-visual .visual-caption{top:40px;left:18px;right:18px;font-size:11px}
+  .service-visual .visual-index{top:15px;left:18px;font-size:11px}
+  .service-visual-controls{left:16px;right:16px;bottom:10px}
+  .service-visual-controls>button{width:36px;height:36px;font-size:19px}
+  .service-visual-dots button{height:32px}
+  .services-enhanced .service summary{padding:18px 0}
+  .services-enhanced .service h3{font-size:24px}
+  .services-enhanced .service-body{padding-left:0}
+  .services-enhanced .service-body p{font-size:15px}
+  .service-benefits{font-size:14px}
+}
+@media(max-height:649px){.services-enhanced .service-visual{position:relative;top:auto;z-index:1}}
+@media(prefers-reduced-motion:reduce){.services-enhanced .service-body,.service-scene{animation:none!important;transform:none!important;opacity:1!important}}
