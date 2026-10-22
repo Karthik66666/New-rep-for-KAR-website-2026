@@ -2,4 +2,8 @@ node_modules/
 .sites-local/
 *.tar.gz
 *.log
-.env*
+.env
+.env.*
+!.env.example
+coverage/
+.DS_Store

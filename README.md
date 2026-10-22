@@ -1,5 +1,66 @@
 # KAR International Infotech
 
+A responsive, single-page website for KAR International Infotech. It uses native HTML, CSS, browser JavaScript and WebGL, with no application framework or runtime package dependencies. The Node.js development server serves the generated static site locally; Vercel publishes the same `dist/` output.
+
+## Requirements
+
+- Node.js 20.12 or later
+- npm
+
+## Setup
+
+```sh
+npm install
+```
+
+Copy `.env.example` to `.env` to configure local environment variables. The current optional setting is `PORT` (defaults to `4173`). Keep secrets out of source control; `.env` is ignored.
+
+## Run and validate
+npm run dev
+npm run build
+npm run check
+npm run lint
+npm test
+```
+
+Open http://127.0.0.1:4173 after starting the development server. `npm run dev` builds the current sources before serving. `npm run build` can also be run on its own. `npm start` serves the existing `dist/` output without rebuilding it.
+
+## Architecture
+
+```text
+src/
+  index.html             Single-page content and semantic page sections
+  assets/                Logos and static image assets
+  scripts/               Browser behavior, split by interaction/domain
+  styles/                Global and feature-specific stylesheets
+scripts/
+  build.mjs              Dependency-free source-to-dist build
+tests/
+  build.test.mjs         Static output smoke test
+dist/                    Generated deployable site; do not edit by hand
+server.mjs               Loopback-only static development server
+eslint.config.js         Browser and Node.js lint configuration
+```
+
+The existing homepage remains a single semantic HTML page. Its independently loaded browser scripts own the sculpture, puzzle, service visuals and service navigation behavior. Styles are grouped by site-wide and service features. `src/` is authoritative; the build copies it to `dist/` without a bundler, preserving the existing static-hosting contract.
+
+There is currently no backend, API, database, client-side router, shared application state layer or TypeScript. The site creates enquiry briefs locally in the visitor's browser and does not submit them. Those architectural layers should be introduced only alongside a feature that needs them.
+
+## Design decisions
+
+- Keep the existing framework-free technology stack and avoid runtime dependencies.
+- Use Node.js built-ins for the static build, local server and smoke test.
+- Keep deployable output in `dist/` for the current Vercel configuration.
+- Restrict the development server to loopback, serve only `GET` and `HEAD`, validate the port, and return basic browser security headers.
+- Use ESLint for JavaScript linting and EditorConfig for consistent text-file conventions. Type checking is not applicable to the current plain JavaScript application.
+- Do not add placeholder APIs, business logic, pages or unused abstractions.
+
+## Existing experience
+
+The site includes the hero, services, approach, about and project-enquiry sections, a WebGL sculpture with a non-WebGL fallback, motion controls, reduced-motion support and browser-local enquiry brief generation. The form does not send email or collect leads remotely.
+
+## Deployment
+
 The initial 3D parallax homepage for KAR International Infotech. Warm white, charcoal and lime; native WebGL sculpture; responsive sections for services, approach, about and project enquiries.
 
 ## Develop
