@@ -4,3 +4,4 @@ node_modules/
 *.log
 .env*
 .kar-data/
+.vercel/

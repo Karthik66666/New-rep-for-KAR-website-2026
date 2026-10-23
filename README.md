@@ -4,13 +4,13 @@ KAR International Infotech's responsive, buildless website with a native WebGL s
 
 ## Develop
 
-Requires Node.js 20 or later. No dependency installation or build is needed.
+Requires Node.js 20 or later. Install the cloud runtime dependencies with `npm ci`; the HTML, CSS and browser JavaScript need no build step. Local development keeps using the file-backed CMS and does not connect to cloud storage.
 
 ```sh
 npm run dev
 ```
 
-Open http://127.0.0.1:4173. Set `PORT` to change the local port. All deployable assets are in `dist/`.
+Open http://127.0.0.1:4173 and http://127.0.0.1:4173/admin. Set `PORT` to change the local port. Static assets are in `dist/`; the Vercel API entry and shared backend remain outside that public directory.
 
 ```sh
 npm run check
@@ -50,17 +50,46 @@ The API uses salted scrypt password hashes, expiring HttpOnly/SameSite sessions,
 
 ## Hosting
 
-The existing Vercel and Sites configuration publishes only `dist/`. It supports the public design, themes and local translation files, but **does not run this Node API or persist CMS/CRM data**. The admin page reports an unavailable backend on static-only hosting. No backend has been provisioned or deployed yet.
+Vercel configuration now includes the public website and the Node API used by KAR Studio, enquiries and applications. `api/index.mjs` handles `/api/*` and `/media/*`; `/admin` serves the existing static admin page. PostgreSQL stores the private database, sessions, form challenges and rate limits, and a **private Vercel Blob store** holds uploaded images. A workspace transaction serializes each request and commits before its response or session cookie is sent. Uploaded media remains behind the backend's existing publication and staff-permission checks.
 
-For a live CMS/CRM, use a single Node 20+ server with a persistent volume for `KAR_DATA_DIR`, backups and an HTTPS reverse proxy to `127.0.0.1:4173`. Set `NODE_ENV=production` and `PUBLIC_ORIGIN` to the exact HTTPS origin; the backend then uses Secure cookies and disables first-account setup. Create the account locally and transfer the private data directory through a secure deployment process first. This file-backed store and in-memory sessions support a single server process. Multiple instances require a shared database, shared session storage and managed image storage.
+The code is prepared; a live deployment still needs the Vercel account/project connection, storage provisioning, environment configuration, migration and deployment verification. No backend deployment is claimed by this repository change.
 
-No hosting purchase, domain change, public deployment or Git push is performed by local development.
+### Vercel project and environment
 
-### Existing static Vercel setup
+Connect `Karthik66666/New-rep-for-KAR-website-2026` and use `main` as the production branch. Leave Root Directory at the repository root (blank or `.`); `kar-international-infotech` is the local checkout folder, not a folder inside this repository. The Other framework preset (`framework: null`), `npm ci`, an empty build command and `dist` output directory retain the buildless website while Vercel discovers the shared `.mjs` function in `api/`. The configuration uses explicit API, media and admin rewrites, with no catch-all page fallback. See Vercel's [Node.js runtime](https://vercel.com/docs/functions/runtimes/node-js) and [rewrite documentation](https://vercel.com/docs/routing/rewrites).
 
-Connect `Karthik66666/New-rep-for-KAR-website-2026` and use `main` as the production branch. Leave Root Directory at the repository root (blank or `.`); `kar-international-infotech` is the local checkout folder, not a folder inside this repository.
+Provision PostgreSQL and a **private** Blob store, then configure these server-side environment variables separately for Production and Preview:
 
-The root `vercel.json` selects the Other framework preset, skips install and build commands, and publishes `dist/` directly. This site needs no build step. After changing settings, redeploy the latest commit from Vercel's Deployments tab. If pushes do not create deployments, check that the Vercel GitHub app has access to this repository and the project is connected to this repository and branch.
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | PostgreSQL connection string, using the provider's required TLS settings. |
+| `BLOB_READ_WRITE_TOKEN` | Token for the private Blob store. Alternatively use `BLOB_STORE_ID` with Vercel's managed `VERCEL_OIDC_TOKEN`. |
+| `KAR_WORKSPACE` | Optional database/media namespace. Defaults to `kar-production` when `VERCEL_ENV=production`, otherwise `kar-preview`. |
+| `PUBLIC_ORIGIN` | Exact HTTPS origin of the custom company domain, with no path. Optional for Vercel's generated deployment/branch/production hostnames. |
+
+Production and Preview defaults keep their records separate. All preview branches share `kar-preview` unless a distinct `KAR_WORKSPACE` is assigned. Use separate storage credentials as well when stronger environment isolation is needed. Do not give a preview deployment the production workspace. A request host must match `PUBLIC_ORIGIN` or Vercel's configured deployment, branch or production hostname; form origin checks then use that exact host, so legitimate preview forms work too. The client IP is taken from Vercel's protected forwarding header only on Vercel; other environments use the socket address. See Vercel's [request-header documentation](https://vercel.com/docs/headers/request-headers).
+
+Keep credentials out of Git and browser files. `.vercelignore` allows only the site/runtime/package files and excludes `.kar-data/`, environment files, `.openai/`, tests and local recordings. The existing `.openai/hosting.json` identity is preserved locally. Sites hosting still publishes the static website only; its identity and a Vercel deployment are separate.
+
+### Transfer the existing local account and content
+
+Cloud account setup is always disabled and cookies are Secure. First create the administrator locally if needed. Stop the local server and back up `.kar-data/` before migration; the migration keeps the original account/password hashes, content, records and media. It starts with empty cloud sessions and never deletes the local source.
+
+Run the default dry run first; it validates the local source without uploading or changing cloud data:
+
+```sh
+npm run migrate:vercel -- --dry-run --workspace kar-preview
+```
+
+Make the storage variables available to the migration process through a secure shell environment. To transfer the approved source into an **empty** preview workspace for the first deployment, explicitly apply it:
+
+```sh
+npm run migrate:vercel -- --apply --workspace kar-preview
+```
+
+Use `--source <directory>` for another local data directory and `--workspace <namespace>` for a different target. After preview verification, a separate production transfer uses `npm run migrate:vercel -- --apply --workspace kar-production` with the production storage credentials. Apply refuses an initialized target instead of overwriting it. Keep the backup and original `.kar-data/` after migration. Redeploy with the configured storage, then verify the homepage, published media, admin sign-in, content edits and form submissions before announcing the live site. Missing storage configuration returns an unavailable-service response, not an empty replacement database.
+
+Self-hosting remains possible with one Node process, a persistent `KAR_DATA_DIR`, backups and an HTTPS reverse proxy to `127.0.0.1:4173`. Set `NODE_ENV=production` and the exact HTTPS `PUBLIC_ORIGIN`; transfer the local data securely before starting. Local development does not purchase hosting, change domains, deploy or push Git changes.
 
 ## Files
 
@@ -80,6 +109,10 @@ The root `vercel.json` selects the Other framework preset, skips install and bui
 - `dist/service-visuals.js` and `dist/service-visuals.css`: gold 3D gears, app phone and growth illustration, matched to the active service and paused when hidden or offscreen.
 - `server.mjs`: loopback-only development server.
 - `backend.mjs`: authenticated CMS/CRM/HR APIs, staff permissions, public form submissions, private persistent store and public media routes.
+- `api/index.mjs`: Vercel request adapter, trusted-host/IP checks and response buffering until storage commits.
+- `cloud-store.mjs`: PostgreSQL workspace transactions and private Vercel Blob media storage.
+- `scripts/migrate-vercel.mjs`: local validation and explicit migration into an empty cloud workspace.
+- `.vercelignore` and `vercel.json`: deployment upload boundaries, API/admin rewrites and security headers.
 - `dist/admin/`: KAR Studio login, CMS editors, CRM, recruitment, employee records and staff access.
 - `dist/content.js` and `dist/content.css`: published homepage projects, client logos and careers.
 - `dist/client-logos.js`: nine-slot client-logo rotation, stopped offscreen, in hidden tabs and by the motion controls.

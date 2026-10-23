@@ -175,13 +175,18 @@ async function jsonBody(req) {
   try { const data = JSON.parse(Buffer.concat(chunks).toString()); if (!data || Array.isArray(data) || typeof data !== 'object') throw new Error(); return data; }
   catch { throw fail(400,'Invalid JSON data.'); }
 }
-export async function createBackend({directory=resolve('.kar-data'),allowSetup=process.env.NODE_ENV !== 'production',secureCookies=process.env.NODE_ENV === 'production',publicOrigin=process.env.PUBLIC_ORIGIN}={}) {
-  await mkdir(directory,{recursive:true,mode:0o700});
-  const media = resolve(directory,'media'); await mkdir(media,{recursive:true,mode:0o700});
-  const file = resolve(directory,'database.json');
+export async function createBackend({directory=resolve('.kar-data'),state,mediaStore,allowSetup=process.env.NODE_ENV !== 'production',secureCookies=process.env.NODE_ENV === 'production',publicOrigin=process.env.PUBLIC_ORIGIN}={}) {
+  const shared = state !== undefined;
+  const media = resolve(directory,'media'), file = resolve(directory,'database.json');
   let database;
-  try { database = JSON.parse(await readFile(file,'utf8')); }
-  catch (error) { if (error.code !== 'ENOENT') throw error; database = {version:2,admin:null,users:[],jobs:[],clients:[],projects:[],contacts:[],employees:[],applications:[]}; }
+  if (shared) {
+    if (!state || !state.database || typeof state.database !== 'object' || Array.isArray(state.database) || !mediaStore?.read || !mediaStore?.write) throw new Error('Shared database and private media storage are required.');
+    database = state.database;
+  } else {
+    await mkdir(media,{recursive:true,mode:0o700});
+    try { database = JSON.parse(await readFile(file,'utf8')); }
+    catch (error) { if (error.code !== 'ENOENT') throw error; database = {version:2,admin:null,users:[],jobs:[],clients:[],projects:[],contacts:[],employees:[],applications:[]}; }
+  }
   // Migrate the original single administrator without changing their credentials or content.
   let migrated = database.version !== 2;
   for (const resource of ['users','jobs','clients','projects','contacts','employees','applications']) {
@@ -197,16 +202,20 @@ export async function createBackend({directory=resolve('.kar-data'),allowSetup=p
     job.nature ??= 'Remote'; job.candidateLevel ??= 'any'; job.questions ??= []; job.experienceMin ??= '';
   }
   database.version = 2;
-  const sessions = new Map(), attempts = new Map(), submissions = new Map(), challengeAttempts = new Map(), challenges = new Map();
+  const saved = shared ? state.runtime ?? {} : {};
+  const sessions = new Map(saved.sessions), attempts = new Map(saved.attempts), submissions = new Map(saved.submissions), challengeAttempts = new Map(saved.challengeAttempts), challenges = new Map(saved.challenges);
   let writes = Promise.resolve();
   function transact(change) {
     const work = writes.then(async () => {
       const next = structuredClone(database);
       const result = await change(next);
-      const temporary = `${file}.${randomUUID()}.tmp`;
-      await writeFile(temporary,JSON.stringify(next,null,2),{mode:0o600});
-      await rename(temporary,file);
+      if (!shared) {
+        const temporary = `${file}.${randomUUID()}.tmp`;
+        await writeFile(temporary,JSON.stringify(next,null,2),{mode:0o600});
+        await rename(temporary,file);
+      }
       database = next;
+      if (shared) state.database = next;
       return result;
     });
     writes = work.catch(() => {});
@@ -266,17 +275,20 @@ export async function createBackend({directory=resolve('.kar-data'),allowSetup=p
   async function serveImage(req,res,name,{privateImage=false}={}) {
     if (!/^[\da-f-]+\.(png|jpg|webp)$/.test(name)) { reply(res,404,{error:'Image not found.'}); return; }
     try {
-      const body = await readFile(resolve(media,name));
+      const body = shared ? await mediaStore.read(name) : await readFile(resolve(media,name));
       res.writeHead(200,{'Content-Type':name.endsWith('.png')?'image/png':name.endsWith('.webp')?'image/webp':'image/jpeg','Cache-Control':privateImage ? 'no-store' : 'no-cache','X-Content-Type-Options':'nosniff'});
       res.end(req.method === 'HEAD' ? undefined : body);
-    } catch { reply(res,404,{error:'Image not found.'}); }
+    } catch (error) {
+      if (shared && error.code !== 'ENOENT' && error.status !== 404) throw error;
+      reply(res,404,{error:'Image not found.'});
+    }
   }
   function protectUserChange(next,existing,record,actorId) {
     const losesAccess = record.active === false || record.archived === true || record.role !== 'super_admin';
     if (existing.id === actorId && losesAccess) throw fail(400,'You cannot disable, archive or demote your own super administrator account.');
     if (existing.role === 'super_admin' && losesAccess && !next.users.some(user => user.id !== existing.id && user.role === 'super_admin' && user.active !== false && !user.archived)) throw fail(400,'Keep at least one active super administrator.');
   }
-  return async function handle(req,res,url) {
+  async function handle(req,res,url) {
     if (url.pathname.startsWith('/media/')) {
       if (!['GET','HEAD'].includes(req.method) || !/^\/media\/[\da-f-]+\.(png|jpg|webp)$/.test(url.pathname)) { reply(res,404,{error:'Not found.'}); return true; }
       const published = [...database.clients,...database.projects].some(item => item.status === 'published' && !item.archived && (item.logo === url.pathname || item.image === url.pathname));
@@ -391,7 +403,8 @@ export async function createBackend({directory=resolve('.kar-data'),allowSetup=p
         const valid = match[1] === 'png' ? buffer.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])) : match[1] === 'jpeg' ? buffer[0] === 255 && buffer[1] === 216 && buffer[2] === 255 : buffer.toString('ascii',0,4) === 'RIFF' && buffer.toString('ascii',8,12) === 'WEBP';
         if (!valid) throw fail(400,'The file is not a supported image.');
         const filename = `${randomUUID()}.${match[1] === 'jpeg' ? 'jpg' : match[1]}`;
-        await writeFile(resolve(media,filename),buffer,{flag:'wx',mode:0o600});
+        if (shared) await mediaStore.write(filename,buffer);
+        else await writeFile(resolve(media,filename),buffer,{flag:'wx',mode:0o600});
         reply(res,201,{url:`/media/${filename}`}); return true;
       }
       const [resource,id,...extra] = route.split('/');
@@ -451,5 +464,14 @@ export async function createBackend({directory=resolve('.kar-data'),allowSetup=p
       reply(res,error.status ?? 500,{error:error.status ? error.message : 'The request could not be saved. Please try again.'});
     }
     return true;
+  }
+  return async (req,res,url) => {
+    try { return await handle(req,res,url); }
+    finally {
+      if (shared) {
+        state.database = database;
+        state.runtime = Object.fromEntries(Object.entries({sessions,attempts,submissions,challengeAttempts,challenges}).map(([name,entries]) => [name,[...entries]]));
+      }
+    }
   };
 }
