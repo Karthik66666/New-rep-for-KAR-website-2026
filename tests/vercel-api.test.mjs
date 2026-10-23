@@ -195,6 +195,6 @@ test('Vercel config serves only explicit routes and keeps private local files ou
   assert.ok(config.rewrites.slice(2).every(rule => rule.destination === '/admin/index.html'));
   const ignored = await readFile(new URL('../.vercelignore',import.meta.url),'utf8');
   assert.match(ignored,/^\/\*$/m);
-  for (const required of ['!/api/','!/dist/','!/backend.mjs','!/cloud-store.mjs','!/package.json','!/package-lock.json']) assert.ok(ignored.split('\n').includes(required));
+  for (const required of ['!/api','!/dist','!/backend.mjs','!/cloud-store.mjs','!/package.json','!/package-lock.json']) assert.ok(ignored.split('\n').includes(required));
   for (const privateName of ['.kar-data','.env','.git','.openai','node_modules','tests','recordings']) assert.ok(ignored.includes(`**/${privateName}`));
 });

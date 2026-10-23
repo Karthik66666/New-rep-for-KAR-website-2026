@@ -1,8 +1,9 @@
 # Upload only the static site and the serverless runtime, never local private data.
 /*
-!/api/
+# Keep parent exceptions slashless: Vercel checks bare directory names before descending.
+!/api
 !/api/**
-!/dist/
+!/dist
 !/dist/**
 !/backend.mjs
 !/cloud-store.mjs
