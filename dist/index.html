@@ -10,12 +10,31 @@
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./services.css">
   <link rel="stylesheet" href="./service-visuals.css">
+  <link rel="stylesheet" href="./responsive.css">
+  <link rel="stylesheet" href="./appearance.css">
+  <link rel="stylesheet" href="./content.css">
+  <link rel="stylesheet" href="./process.css">
+  <link rel="stylesheet" href="./capabilities.css">
+  <link rel="stylesheet" href="./reveals.css">
+  <script src="./preferences.js"></script>
+  <script src="./i18n.js" defer></script>
+  <script src="./content.js" defer></script>
+  <script src="./client-logos.js" defer></script>
   <script src="./app.js" defer></script>
+  <script src="./reveals.js" defer></script>
+  <script src="./process.js" defer></script>
+  <script src="./capabilities.js" defer></script>
+  <script src="./forms.js" defer></script>
   <script src="./puzzle.js" defer></script>
   <script src="./service-visuals.js" defer></script>
   <script src="./services.js" defer></script>
 </head>
 <body>
+  <div class="site-preferences" role="group" aria-label="Website preferences">
+    <button type="button" data-theme-toggle aria-pressed="false">Dark theme</button>
+    <button type="button" data-effects-toggle aria-pressed="true">Effects on</button>
+    <select id="language-select" aria-label="Website language"><option value="en" lang="en">English</option><option value="ta" lang="ta">தமிழ்</option></select>
+  </div>
   <a class="skip-link" href="#main">Skip to content</a>
   <div class="scroll-progress" aria-hidden="true"></div>
   <header class="header" id="header">
@@ -24,43 +43,55 @@
       <span class="brand-name">International<span>Infotech</span></span>
     </a>
     <nav class="desktop-nav" aria-label="Main navigation">
-      <a href="#services">What we do</a><a href="#approach">Our approach</a><a href="#about">About KAR</a><a href="#works">Our works</a>
+      <a href="#services">What we do</a><a href="#approach">Our approach</a><a href="#about">About KAR</a><a href="#works">Our works</a><a href="#careers">Careers</a>
     </nav>
-    <a class="button button-dark nav-cta" href="#contact">Let’s talk <span aria-hidden="true">↗</span></a>
+    <a class="button button-dark nav-cta" href="#contact" data-open-enquiry>Let’s talk <span aria-hidden="true">↗</span></a>
     <button class="menu-toggle" aria-label="Open navigation" aria-controls="mobile-nav" aria-expanded="false"><span></span><span></span></button>
   </header>
   <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile navigation" hidden>
-    <a href="#services">What we do <span>01</span></a><a href="#approach">Our approach <span>02</span></a><a href="#about">About KAR <span>03</span></a><a href="#works">Our works <span>04</span></a><a href="#contact">Let’s talk <span>↗</span></a>
+    <a href="#services">What we do <span>01</span></a><a href="#approach">Our approach <span>02</span></a><a href="#about">About KAR <span>03</span></a><a href="#works">Our works <span>04</span></a><a href="#careers">Careers <span>05</span></a><a href="#contact" data-open-enquiry>Let’s talk <span>↗</span></a>
   </nav>
   <main id="main">
     <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-overline"><span><i class="status-dot"></i> IDEAS WITHOUT LIMITS.</span><span>INDEPENDENT. CONNECTED. KAR.</span></div>
+      <div class="hero-overline"><span>IDEAS WITHOUT LIMITS.</span><span>INDEPENDENT. CONNECTED. KAR.</span></div>
       <div class="hero-content">
         <p class="eyebrow hero-eyebrow">YOUR AMBITION. OUR NEXT CHALLENGE.</p>
-        <h1 id="hero-title">Think<br>beyond.<span>Build what’s next.</span></h1>
-        <p class="hero-copy">From your first idea to your next big move.<br>We bring design, technology and digital growth together to move your business forward.</p>
+        <h1 id="hero-title">Think<br class="hero-title-break"> beyond.<span>Build what’s next.</span></h1>
+        <p class="hero-copy">From your first idea to your next big move.<br class="hero-copy-break"> We bring design, technology and digital growth together to move your business forward.</p>
         <a class="button button-dark hero-cta" href="#services">Explore what we do <span aria-hidden="true">↘</span></a>
       </div>
       <div class="hero-art" aria-label="An interactive metallic sculpture rotates with your pointer and as you scroll" role="img">
         <div class="art-grid" aria-hidden="true"></div>
-        <div class="art-cross cross-one" aria-hidden="true">+</div><div class="art-cross cross-two" aria-hidden="true">+</div>
         <canvas id="sculpture" aria-hidden="true"></canvas>
         <svg class="art-fallback" viewBox="0 0 600 600" aria-hidden="true"><defs><linearGradient id="metal" x2="1" y2="1"><stop stop-color="#1f2937"/><stop offset=".25" stop-color="#f3f4f6"/><stop offset=".45" stop-color="#4b5563"/><stop offset=".68" stop-color="#d1d5db"/><stop offset="1" stop-color="#111827"/></linearGradient></defs><g fill="none" stroke="url(#metal)" stroke-width="54"><ellipse cx="300" cy="300" rx="176" ry="100" transform="rotate(-45 300 300)"/><ellipse cx="300" cy="300" rx="176" ry="100" transform="rotate(45 300 300)"/></g></svg>
-        <div class="art-tag"><span class="tag-dot"></span> THE SHAPE OF WHAT’S NEXT</div>
-        <span class="art-coordinate">KAR — DIGITAL POSSIBILITIES</span>
       </div>
+      <span class="art-coordinate">KAR — DIGITAL POSSIBILITIES</span>
       <div class="hero-footer"><a href="#intro" class="scroll-link"><span class="scroll-icon" aria-hidden="true">↓</span> A little scroll. A new perspective.</a><span>SOFTWARE. EXPERIENCES. GROWTH.</span><button class="motion-toggle" aria-pressed="false">Pause motion <span aria-hidden="true">Ⅱ</span></button></div>
     </section>
 
     <section class="intro section-pad reveal" id="intro" aria-labelledby="intro-title">
       <div class="section-label reveal"><span class="tiny-square"></span> 01 / A CONNECTED WAY FORWARD</div>
       <div class="intro-content"><h2 class="reveal" id="intro-title">Good ideas deserve<br><span class="muted">more than a maybe.</span></h2><div class="intro-detail reveal"><p>You know where you want your business to go. We help you get there with thoughtful design, software built around your needs, and marketing with a clear purpose.</p><a class="text-link" href="#about">Meet the thinking behind KAR <span aria-hidden="true">↗</span></a></div></div>
-      <div class="capability-strip" aria-label="Our disciplines"><span>STRATEGY</span><span aria-hidden="true">✳</span><span>DESIGN</span><span aria-hidden="true">✳</span><span>DEVELOPMENT</span><span aria-hidden="true">✳</span><span>GROWTH</span></div>
+      <div class="capability-strip" aria-label="Our disciplines">
+        <span class="capability-word">STRATEGY</span>
+        <span class="capability-star" aria-hidden="true"><span>✳</span></span>
+        <span class="capability-word">DESIGN</span>
+        <span class="capability-star" aria-hidden="true"><span>✳</span></span>
+        <span class="capability-word">DEVELOPMENT</span>
+        <span class="capability-star" aria-hidden="true"><span>✳</span></span>
+        <span class="capability-word">GROWTH</span>
+      </div>
     </section>
 
     <section class="services section-pad" id="services" aria-labelledby="services-title">
       <div class="section-label reveal"><span class="tiny-square"></span> 02 / WHAT WE DO</div>
       <div class="section-heading reveal"><h2 id="services-title">Different disciplines.<br><span>One forward direction.</span></h2><p>From how your brand looks<br>to how your business works.</p></div>
+      <nav class="service-heading-nav" aria-label="Choose a service">
+        <a href="#web-development"><span>01</span>Web design &amp; development</a>
+        <a href="#custom-software"><span>02</span>Custom software development</a>
+        <a href="#mobile-app-development"><span>03</span>Mobile app development</a>
+        <a href="#digital-marketing"><span>04</span>Digital marketing &amp; SEO</a>
+      </nav>
       <div class="services-layout">
         <div class="service-visual" data-active-service="0" role="group" aria-label="Service illustrations and navigation">
           <div class="visual-grid" aria-hidden="true"></div>
@@ -101,9 +132,74 @@
       <div class="section-label reveal"><span class="tiny-square"></span> 03 / THE WAY WE WORK</div>
       <div class="section-heading reveal"><h2 id="approach-title">Big picture thinking.<br><span class="muted">Down-to-earth process.</span></h2><p>Clear conversations.<br>Purposeful progress.</p></div>
       <div class="process-grid">
-        <article class="process-step reveal"><span class="step-number">01 / DISCOVER</span><div class="step-art discover-art" aria-hidden="true"><span></span><span></span><span></span></div><h3>Understand the ambition.</h3><p>We listen first. Your goals, your audience and the problem you want to solve shape the brief.</p></article>
-        <article class="process-step reveal"><span class="step-number">02 / CREATE</span><div class="step-art create-art" aria-hidden="true"><span></span><span></span><span></span></div><h3>Make the idea tangible.</h3><p>Design and development turn the plan into a working experience, with your feedback along the way.</p></article>
-        <article class="process-step reveal"><span class="step-number">03 / EVOLVE</span><div class="step-art evolve-art" aria-hidden="true"><span></span><span></span><span></span></div><h3>Build on what’s working.</h3><p>We help you launch, learn and refine — so your digital presence can move with your business.</p></article>
+        <article class="process-step">
+          <div class="process-card">
+            <span class="step-number">01 / DISCOVER</span>
+            <div class="process-icon" aria-hidden="true">
+              <svg viewBox="0 0 160 160" fill="none" focusable="false">
+                <g class="process-icon-drift">
+                  <path class="process-icon-faint" d="M27 47V27h20M113 47V27H93M27 93v20h20"/>
+                  <circle class="process-icon-lens" cx="72" cy="72" r="40"/>
+                  <g class="discover-focus">
+                    <circle class="process-icon-accent" cx="72" cy="72" r="19"/>
+                    <path class="process-icon-accent" d="M72 45v9M72 90v9M45 72h9M90 72h9"/>
+                    <circle class="process-icon-solid" cx="72" cy="72" r="4"/>
+                  </g>
+                  <path class="process-icon-line" d="m101 101 8 8"/>
+                  <path class="process-icon-handle" d="m111 105 23 23a6 6 0 0 1-9 9l-23-23z"/>
+                </g>
+              </svg>
+            </div>
+            <h3>Understand the ambition.</h3>
+            <p>We listen first. Your goals, your audience and the problem you want to solve shape the brief.</p>
+          </div>
+        </article>
+        <article class="process-step">
+          <div class="process-card">
+            <span class="step-number">02 / CREATE</span>
+            <div class="process-icon" aria-hidden="true">
+              <svg viewBox="0 0 160 160" fill="none" focusable="false">
+                <g class="process-icon-drift">
+                  <rect class="process-icon-window" x="21" y="32" width="116" height="91" rx="9"/>
+                  <path class="process-icon-line" d="M21 55h116"/>
+                  <circle class="process-icon-solid" cx="34" cy="44" r="2"/>
+                  <circle class="process-icon-faint-fill" cx="43" cy="44" r="2"/>
+                  <circle class="process-icon-faint-fill" cx="52" cy="44" r="2"/>
+                  <g class="create-code process-icon-accent">
+                    <path d="m55 76-12 12 12 12M101 76l12 12-12 12M85 72l-13 32"/>
+                  </g>
+                  <g class="create-cursor">
+                    <path class="process-icon-cursor" d="m119 105 5 34 9-11 14-3z"/>
+                    <path class="process-icon-cursor-line" d="m133 128 6 12"/>
+                  </g>
+                </g>
+              </svg>
+            </div>
+            <h3>Make the idea tangible.</h3>
+            <p>Design and development turn the plan into a working experience, with your feedback along the way.</p>
+          </div>
+        </article>
+        <article class="process-step">
+          <div class="process-card">
+            <span class="step-number">03 / EVOLVE</span>
+            <div class="process-icon" aria-hidden="true">
+              <svg viewBox="0 0 160 160" fill="none" focusable="false">
+                <g class="process-icon-drift">
+                  <path class="process-icon-faint" d="M24 31v100h115M24 99h110M24 66h110M24 33h110"/>
+                  <rect class="process-icon-bar evolve-bar evolve-bar-one" x="38" y="100" width="17" height="31" rx="3"/>
+                  <rect class="process-icon-bar evolve-bar evolve-bar-two" x="73" y="80" width="17" height="51" rx="3"/>
+                  <rect class="process-icon-bar evolve-bar evolve-bar-three" x="108" y="60" width="17" height="71" rx="3"/>
+                  <g class="evolve-arrow process-icon-accent">
+                    <path d="m36 79 33-26 24 8 39-37M112 24h20v20"/>
+                  </g>
+                  <circle class="process-icon-solid" cx="69" cy="53" r="4"/>
+                </g>
+              </svg>
+            </div>
+            <h3>Build on what’s working.</h3>
+            <p>We help you launch, learn and refine — so your digital presence can move with your business.</p>
+          </div>
+        </article>
       </div>
     </section>
 
@@ -115,15 +211,60 @@
     <section class="works section-pad" id="works" aria-labelledby="works-title">
       <div class="section-label"><span class="tiny-square"></span> 05 / OUR WORKS</div>
       <div class="works-heading"><h2 id="works-title">Our works.</h2><p>Project showcase coming soon.</p></div>
+      <div id="client-logos" class="client-logos" hidden aria-label="Our clients"></div>
+      <div id="project-grid" class="content-grid" hidden></div>
+    </section>
+
+    <section class="careers section-pad" id="careers" aria-labelledby="careers-title">
+      <div class="section-label">CAREERS / GROW WITH KAR</div>
+      <div class="works-heading"><h2 id="careers-title">Build your next chapter.</h2><p id="jobs-empty">There are no open roles at the moment.</p></div>
+      <div id="job-list" class="content-grid" hidden></div>
     </section>
 
     <section class="contact section-pad" id="contact" aria-labelledby="contact-title">
       <div class="contact-top"><div class="section-label"><span class="tiny-square"></span> 06 / YOUR NEXT CHAPTER</div><span>GREAT THINGS START WITH A CONVERSATION.</span></div>
-      <div class="contact-main"><h2 id="contact-title">Have a spark?<br>Let’s make it <em>real.</em></h2><button class="contact-orb" id="open-enquiry" aria-label="Start a project enquiry"><span aria-hidden="true">↗</span><small>START A PROJECT</small></button></div>
+      <div class="contact-main"><h2 id="contact-title">Have a spark?<br>Let’s make it <em>real.</em></h2><button class="contact-orb" id="open-enquiry" aria-label="Let’s start your project"><span aria-hidden="true">↗</span><small>Let’s start your project</small></button></div>
       <div class="contact-bottom"><p>A new website. A smarter workflow. A brand ready to grow.<br>Tell us what you have in mind.</p><span>KAR INTERNATIONAL INFOTECH</span></div>
     </section>
   </main>
-  <footer class="footer"><a class="brand footer-brand" href="#" aria-label="KAR home"><img class="brand-logo" src="./kar-logo.png" alt="KAR International Infotech - Innovate, Integrate, Elevate" width="1254" height="1254"></a><p>© <span id="year">2026</span> KAR International Infotech.</p><a href="#" class="back-top">Back to top <span aria-hidden="true">↑</span></a></footer>
-  <dialog id="enquiry-dialog" aria-labelledby="enquiry-title"><div class="dialog-content"><button class="dialog-close" aria-label="Close project enquiry">×</button><p class="eyebrow">A NEW CHAPTER STARTS HERE.</p><h2 id="enquiry-title">What’s on<br>your mind?</h2><p class="dialog-intro">Create a short project brief to share with the KAR team.</p><form id="enquiry-form"><label>Your name<input name="name" autocomplete="name" required maxlength="100" placeholder="How should we call you?"></label><label>Email address<input name="email" type="email" autocomplete="email" required maxlength="200" placeholder="you@company.com"></label><label>I’m interested in<select name="service" id="service-select" required><option value="">Choose a service</option><option>Website development</option><option>Custom software</option><option>Mobile application</option><option>Digital marketing</option><option>Let’s explore an idea</option></select></label><label>A little about your project<textarea name="message" rows="3" required maxlength="3000" placeholder="Your idea, goal, or challenge…"></textarea></label><button type="submit" class="button button-dark">Create project brief <span aria-hidden="true">↗</span></button><p class="form-note">This preview prepares your brief on your device. It does not send an enquiry.</p></form><div id="brief-result" hidden><p class="result-label">YOUR IDEA IS READY FOR ITS NEXT STEP.</p><h3>Your project brief is ready.</h3><pre id="brief-text"></pre><div class="brief-actions"><button class="button button-dark" id="copy-brief">Copy brief <span aria-hidden="true">↗</span></button><button class="text-link" id="download-brief">Download .txt <span aria-hidden="true">↓</span></button></div><p class="form-note" id="brief-status" aria-live="polite">Share this brief with your KAR contact to start the conversation.</p><button class="text-link" id="edit-brief">Edit your brief <span aria-hidden="true">↩</span></button></div></div></dialog>
+  <footer class="footer"><a class="brand footer-brand" href="#" aria-label="KAR home"><img class="brand-logo" src="./kar-logo.png" alt="KAR International Infotech - Innovate, Integrate, Elevate" width="1254" height="1254"></a><p>© <span id="year">2026</span> KAR International Infotech.</p><a class="staff-link" href="#careers">Careers</a><a class="staff-link" href="/admin">Team login</a><a href="#" class="back-top">Back to top <span aria-hidden="true">↑</span></a></footer>
+  <dialog id="enquiry-dialog" class="public-form-dialog" aria-labelledby="enquiry-title"><div class="dialog-content">
+    <button type="button" class="dialog-close" aria-label="Close project enquiry">×</button>
+    <p class="eyebrow">A NEW CHAPTER STARTS HERE.</p><h2 id="enquiry-title">Let’s start<br>your project.</h2>
+    <p class="dialog-intro">Tell the KAR team what you have in mind. We’ll use these details to follow up about your project.</p>
+    <form id="enquiry-form">
+      <label>Your name<input name="name" autocomplete="name" required maxlength="100" placeholder="How should we call you?"></label>
+      <label>Email address<input name="email" type="email" autocomplete="email" required maxlength="200" placeholder="you@company.com"></label>
+      <div class="phone-fields"><label>Country code<input name="countryCode" type="tel" inputmode="tel" autocomplete="tel-country-code" value="+91" required maxlength="5" pattern="\+[1-9][0-9]{0,3}" title="Use + followed by your country calling code"></label><label>Phone number<input name="phone" type="tel" inputmode="tel" autocomplete="tel-national" required minlength="6" maxlength="25"></label></div>
+      <label>I’m interested in<select name="service" id="service-select" required><option value="">Choose a service</option><option value="Website development">Website development</option><option value="Custom software">Custom software</option><option value="Mobile application">Mobile application</option><option value="Digital marketing">Digital marketing</option><option value="Let’s explore an idea">Let’s explore an idea</option></select></label>
+      <label>A little about your project<textarea name="message" rows="4" required maxlength="3000" placeholder="Your idea, goal, or challenge…"></textarea></label>
+      <label class="check-field"><input name="consent" type="checkbox" required><span>I agree that KAR may store these details and contact me about my project.</span></label>
+      <label class="check-field robot-confirmation"><input name="robotCheck" type="checkbox" required><span>I’m not a robot</span></label>
+      <p class="form-note spam-note">Please confirm you are submitting this form yourself.</p>
+      <label class="form-honeypot" aria-hidden="true">Leave this field empty<input name="website" type="text" tabindex="-1" autocomplete="off"></label>
+      <button type="submit" class="button button-dark"><span class="submit-label">Send project enquiry</span><span aria-hidden="true">↗</span></button>
+      <p class="form-feedback" id="enquiry-status" role="status" aria-live="polite"></p>
+    </form>
+    <div id="enquiry-result" class="submission-result" hidden tabindex="-1"><h3>Thank you. Your enquiry is saved.</h3><p>The KAR team can now follow up about your project.</p><p class="submission-reference" data-no-translate></p><button type="button" class="text-link" id="new-enquiry">Send another enquiry <span aria-hidden="true">↗</span></button></div>
+  </div></dialog>
+  <dialog id="application-dialog" class="public-form-dialog application-dialog" aria-labelledby="application-title"><div class="dialog-content">
+    <button type="button" class="dialog-close" aria-label="Close job application">×</button><p class="eyebrow">YOUR NEXT CHAPTER AT KAR.</p><h2 id="application-title">Apply for this role</h2><p id="application-role" class="dialog-intro" data-no-translate></p>
+    <form id="application-form">
+      <input name="jobId" type="hidden">
+      <div class="application-basics form-grid"><label>Your name<input name="name" autocomplete="name" required maxlength="100"></label><label>Email address<input name="email" type="email" autocomplete="email" required maxlength="200"></label></div>
+      <div class="phone-fields"><label>Country code<input name="countryCode" type="tel" inputmode="tel" autocomplete="tel-country-code" value="+91" required maxlength="5" pattern="\+[1-9][0-9]{0,3}" title="Use + followed by your country calling code"></label><label>Phone number<input name="phone" type="tel" inputmode="tel" autocomplete="tel-national" required minlength="6" maxlength="25"></label></div>
+      <label>Address<textarea name="address" autocomplete="street-address" rows="2" required maxlength="1000"></textarea></label>
+      <label>Degree / highest qualification<input name="degree" required maxlength="200" autocomplete="off"></label>
+      <label>Experience level<select name="experienceType" required></select></label>
+      <fieldset id="experienced-fields" hidden disabled><legend>Work experience</legend><div class="form-grid"><label>Years of experience<input name="yearsExperience" type="number" min="0" max="70" step="0.01" required></label><label>Latest company name<input name="latestCompany" required maxlength="250" autocomplete="organization"></label></div><label>Notice period<input name="noticePeriod" required maxlength="160" placeholder="For example, 30 days or available immediately"></label></fieldset>
+      <label>Portfolio URL (optional)<input name="portfolioUrl" type="url" maxlength="500" placeholder="https://"></label>
+      <fieldset id="job-questions" hidden><legend>About this role</legend><div id="job-question-fields"></div></fieldset>
+      <label class="check-field"><input name="consent" type="checkbox" required><span>I agree that KAR may store these details and contact me about my application.</span></label>
+      <label class="check-field robot-confirmation"><input name="robotCheck" type="checkbox" required><span>I’m not a robot</span></label><p class="form-note spam-note">Please confirm you are submitting this form yourself.</p>
+      <label class="form-honeypot" aria-hidden="true">Leave this field empty<input name="website" type="text" tabindex="-1" autocomplete="off"></label>
+      <button type="submit" class="button button-dark"><span class="submit-label">Submit application</span><span aria-hidden="true">↗</span></button><p class="form-feedback" id="application-status" role="status" aria-live="polite"></p>
+    </form>
+    <div id="application-result" class="submission-result" hidden tabindex="-1"><h3>Your application is saved.</h3><p>Thank you for your interest in joining KAR. Our team will review your details.</p><p class="submission-reference" data-no-translate></p><button type="button" class="text-link" data-close-application>Close <span aria-hidden="true">↗</span></button></div>
+  </div></dialog>
 </body>
 </html>

@@ -1,0 +1,29 @@
+/* Scroll owns these properties once enhanced; replace the older timed reveals. */
+html body.scroll-reveals .reveal {
+  opacity:var(--reveal-opacity,1)!important;
+  transform:translate3d(0,var(--reveal-rise,0px),0) scale(var(--reveal-scale,1))!important;
+  transform-origin:center top;
+  transition:none!important;
+  transition-delay:0s!important;
+}
+/* The disciplines have their own scroll module, including its static fallback. */
+html body.scroll-reveals #intro .capability-strip {
+  opacity:1!important;
+  transform:none!important;
+  transition:none!important;
+  transition-delay:0s!important;
+}
+/* Keyboard focus and motion preferences always expose the complete content. */
+html body.scroll-reveals .reveal:focus-within,
+html body.scroll-reveals .reveal:focus-visible,
+html body.scroll-reveals.motion-paused .reveal,
+html body.scroll-reveals.motion-reduced .reveal {
+  opacity:1!important;
+  transform:none!important;
+}
+@media(prefers-reduced-motion:reduce) {
+  html body.scroll-reveals .reveal {
+    opacity:1!important;
+    transform:none!important;
+  }
+}

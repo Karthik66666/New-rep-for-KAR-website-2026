@@ -1,0 +1,79 @@
+/* Keep the settled desktop positions; only each word's scroll offset changes. */
+.capability-strip { position:relative; overflow:visible; }
+.capability-strip .capability-word {
+  display:inline-block;
+  min-width:0;
+  opacity:1;
+  transform:none;
+  transition:none;
+}
+.capability-strip.capabilities-enhanced .capability-word {
+  opacity:var(--capability-opacity,1);
+  transform:translate3d(0,var(--capability-rise,0px),0);
+}
+/* The older introduction reveal must not move or fade the whole word strip. */
+.js-motion #intro .capability-strip.capabilities-enhanced {
+  opacity:1;
+  transform:none;
+  transition:none;
+  transition-delay:0s;
+}
+.capability-strip .capability-star {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.capability-star > span {
+  display:inline-block;
+  line-height:1;
+  transform-origin:center;
+  animation:capability-star-turn 24s linear infinite;
+  animation-play-state:paused;
+}
+.capability-star:nth-child(4) > span { animation-delay:-8s; animation-direction:reverse; }
+.capability-star:nth-child(6) > span { animation-delay:-16s; }
+.capability-strip.capabilities-running .capability-star > span { animation-play-state:running; }
+@keyframes capability-star-turn {
+  0% { transform:rotate(0deg) scale(.95); }
+  12.5% { transform:rotate(45deg) scale(1.04); }
+  25% { transform:rotate(90deg) scale(.95); }
+  37.5% { transform:rotate(135deg) scale(1.04); }
+  50% { transform:rotate(180deg) scale(.95); }
+  62.5% { transform:rotate(225deg) scale(1.04); }
+  75% { transform:rotate(270deg) scale(.95); }
+  87.5% { transform:rotate(315deg) scale(1.04); }
+  100% { transform:rotate(360deg) scale(.95); }
+}
+/* Pair the disciplines on phones so separators never wrap onto their own line. */
+@media(max-width:760px) {
+  .capability-strip {
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+    align-items:center;
+    column-gap:clamp(12px,4vw,28px);
+    row-gap:20px;
+    white-space:normal;
+  }
+  .capability-strip .capability-word { overflow-wrap:anywhere; }
+  .capability-word:nth-child(1) { grid-area:1 / 1; justify-self:start; }
+  .capability-star:nth-child(2) { grid-area:1 / 2; }
+  .capability-word:nth-child(3) { grid-area:1 / 3; justify-self:end; text-align:right; }
+  .capability-star:nth-child(4) { display:none; }
+  .capability-word:nth-child(5) { grid-area:2 / 1; justify-self:start; }
+  .capability-star:nth-child(6) { grid-area:2 / 2; }
+  .capability-word:nth-child(7) { grid-area:2 / 3; justify-self:end; text-align:right; }
+}
+html[lang=ta] .capability-strip { letter-spacing:0; }
+body.motion-paused .capability-strip.capabilities-enhanced .capability-word,
+body.motion-reduced .capability-strip.capabilities-enhanced .capability-word {
+  transform:none;
+  opacity:1;
+}
+body.motion-paused .capability-star > span,
+body.motion-reduced .capability-star > span,
+.page-hidden .capability-star > span { animation-play-state:paused!important; }
+@media(prefers-reduced-motion:reduce) {
+  .capability-strip.capabilities-enhanced .capability-word { transform:none; opacity:1; }
+  .capability-star > span { animation:none; }
+}

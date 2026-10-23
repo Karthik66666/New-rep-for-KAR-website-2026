@@ -7,7 +7,6 @@
   const progressBar = document.querySelector('.scroll-progress');
   const hero = document.querySelector('.hero');
   const artGrid = document.querySelector('.art-grid');
-  const artTag = document.querySelector('.art-tag');
   const aboutGraphic = document.querySelector('.about-graphic');
   const aboutSticker = document.querySelector('.about-sticker');
   const aboutLogo = document.querySelector('.about-background-logo');
@@ -44,7 +43,6 @@
   function updateParallax() {
     const travel = paused ? 0 : Math.min(scrollY, hero.offsetHeight);
     artGrid.style.transform = `translate3d(0,${travel * .13}px,0)`;
-    artTag.style.transform = `translate3d(0,${travel * -.07}px,0) rotate(-8deg)`;
     const rect = aboutGraphic.getBoundingClientRect();
     const offset = paused ? 0 : Math.max(-35, Math.min(35, (window.innerHeight / 2 - rect.top - rect.height / 2) * .09));
     aboutSticker.style.transform = `translate3d(0,${offset}px,0) rotate(9deg)`;
@@ -66,92 +64,52 @@
   });
   document.querySelector('.hero-art').addEventListener('pointerleave', () => { pointer = { x: 0, y: 0 }; });
 
-  if ('IntersectionObserver' in window) {
-    if (!reduceMotion.matches) body.classList.add('js-motion');
-    const revealObserver = new IntersectionObserver(entries => {
-      entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); revealObserver.unobserve(entry.target); } });
-    }, { threshold: .08 });
-    // Wait until the introduction is further inside the viewport before rising.
-    const introObserver = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          introObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: .15, rootMargin: `0px 0px -${Math.round(window.innerHeight * .28)}px 0px` });
-    introObserver.observe(document.querySelector('#intro'));
-    document.querySelectorAll('.reveal').forEach(el => {
-      // The introduction reveals as one card, then staggers its contents.
-      if (!el.closest('#intro')) revealObserver.observe(el);
-    });
-  }
+  // Repeatable scroll-linked entrances are managed by reveals.js.
 
   const menuButton = document.querySelector('.menu-toggle');
   const mobileNav = document.querySelector('#mobile-nav');
+  const header = document.querySelector('.header');
+  const menuLinks = [...mobileNav.querySelectorAll('a')];
+  const menuBackground = [document.querySelector('main'),document.querySelector('.footer'),header.querySelector('.brand')].filter(Boolean);
+  function updateHeaderOffset() {
+    document.documentElement.style.setProperty('--header-offset',`${Math.ceil(header.getBoundingClientRect().height)}px`);
+  }
   function closeMenu() {
     mobileNav.hidden = true;
     body.classList.remove('menu-open');
+    menuBackground.forEach(element => { element.inert = false; });
     menuButton.setAttribute('aria-expanded', 'false');
     menuButton.setAttribute('aria-label', 'Open navigation');
   }
   menuButton.addEventListener('click', () => {
     const opening = mobileNav.hidden;
-    mobileNav.hidden = !opening;
-    body.classList.toggle('menu-open', opening);
-    menuButton.setAttribute('aria-expanded', String(opening));
-    menuButton.setAttribute('aria-label', opening ? 'Close navigation' : 'Open navigation');
+    if (!opening) { closeMenu(); return; }
+    updateHeaderOffset();
+    mobileNav.hidden = false;
+    body.classList.add('menu-open');
+    menuBackground.forEach(element => { element.inert = true; });
+    menuButton.setAttribute('aria-expanded', 'true');
+    menuButton.setAttribute('aria-label', 'Close navigation');
+    menuLinks[0]?.focus();
   });
-  mobileNav.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
-  window.matchMedia('(min-width: 1051px)').addEventListener('change', event => { if (event.matches) closeMenu(); });
-  document.addEventListener('keydown', event => { if (event.key === 'Escape' && !mobileNav.hidden) { closeMenu(); menuButton.focus(); } });
+  menuLinks.forEach(link => link.addEventListener('click', closeMenu));
+  window.matchMedia('(min-width: 1201px)').addEventListener('change', event => { if (event.matches) closeMenu(); });
+  document.addEventListener('keydown', event => {
+    if (mobileNav.hidden) return;
+    if (event.key === 'Escape') { closeMenu(); menuButton.focus(); }
+    if (event.key !== 'Tab') return;
+    const controls = [menuButton,...menuLinks];
+    const index = controls.indexOf(document.activeElement);
+    if (index < 0 || (event.shiftKey && index === 0) || (!event.shiftKey && index === controls.length-1)) {
+      event.preventDefault();
+      controls[event.shiftKey ? controls.length-1 : 0].focus();
+    }
+  });
+  window.addEventListener('resize',updateHeaderOffset,{passive:true});
+  if ('ResizeObserver' in window) new ResizeObserver(updateHeaderOffset).observe(header);
+  updateHeaderOffset();
 
-  const dialog = document.querySelector('#enquiry-dialog');
-  const form = document.querySelector('#enquiry-form');
-  const result = document.querySelector('#brief-result');
-  const briefText = document.querySelector('#brief-text');
-  const briefStatus = document.querySelector('#brief-status');
-  let brief = '';
-  function openEnquiry(service) {
-    if (service) document.querySelector('#service-select').value = service;
-    form.hidden = false;
-    result.hidden = true;
-    dialog.showModal();
-    body.classList.add('dialog-open');
-  }
-  document.querySelector('#open-enquiry').addEventListener('click', () => openEnquiry());
-  document.querySelectorAll('.service-enquire').forEach(button => button.addEventListener('click', () => openEnquiry(button.dataset.service)));
-  document.querySelector('.dialog-close').addEventListener('click', () => dialog.close());
-  dialog.addEventListener('close', () => body.classList.remove('dialog-open'));
-  dialog.addEventListener('click', event => {
-    if (event.target !== dialog) return;
-    const rect = dialog.getBoundingClientRect();
-    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close();
-  });
-  form.addEventListener('submit', event => {
-    event.preventDefault();
-    const data = new FormData(form);
-    brief = `KAR INTERNATIONAL INFOTECH\nPROJECT ENQUIRY\n\nName: ${String(data.get('name')).trim()}\nEmail: ${String(data.get('email')).trim()}\nService: ${data.get('service')}\n\nAbout the project:\n${String(data.get('message')).trim()}\n`;
-    briefText.textContent = brief;
-    form.hidden = true;
-    result.hidden = false;
-    briefStatus.textContent = 'Share this brief with your KAR contact to start the conversation.';
-    document.querySelector('#copy-brief').focus();
-  });
-  document.querySelector('#copy-brief').addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(brief); briefStatus.textContent = 'Copied. Your project brief is ready to share.'; }
-    catch { briefStatus.textContent = 'Use Download .txt to save your brief, or select and copy the text above.'; }
-  });
-  document.querySelector('#download-brief').addEventListener('click', () => {
-    const url = URL.createObjectURL(new Blob([brief], { type: 'text/plain;charset=utf-8' }));
-    const link = document.createElement('a');
-    link.href = url; link.download = 'KAR-project-brief.txt'; link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    briefStatus.textContent = 'Brief downloaded. Share it with your KAR contact.';
-  });
-  document.querySelector('#edit-brief').addEventListener('click', () => {
-    form.hidden = false; result.hidden = true; form.elements.name.focus();
-  });
+  // Public enquiry and recruitment forms are managed by forms.js.
 
   /* A sculptural torus knot, rendered locally without a model download. */
   const canvas = document.querySelector('#sculpture');

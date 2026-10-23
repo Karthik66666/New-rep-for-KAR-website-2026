@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#ffffff">
+  <title>KAR Studio — CMS, CRM &amp; People</title>
+  <link rel="icon" href="/kar-logo.png"><link rel="stylesheet" href="/admin/admin.css">
+  <script src="/preferences.js"></script><script src="/admin/admin.js" defer></script>
+</head>
+<body>
+  <section class="auth-shell" id="auth-screen">
+    <div class="auth-intro">
+      <a href="/"><img src="/kar-logo.png" width="90" height="90" alt="KAR International Infotech"></a>
+      <p class="eyebrow">KAR STUDIO</p><h1>Your work.<br>One place.</h1>
+      <p>Manage your website, client conversations, hiring and team.</p><a class="back-link" href="/">← Back to website</a>
+    </div>
+    <div class="auth-panel"><form id="login-form">
+      <p class="eyebrow">PRIVATE WORKSPACE</p><h2 id="auth-title">Sign in</h2><p id="auth-note">Use your workspace account.</p>
+      <label id="setup-name-label" hidden>Your name<input id="setup-name" name="name" autocomplete="name" maxlength="160"></label>
+      <label>Email address<input name="email" type="email" autocomplete="username" required maxlength="200"></label>
+      <label>Password<input id="auth-password" name="password" type="password" autocomplete="current-password" required maxlength="200"></label>
+      <button class="primary" id="auth-submit" type="submit">Sign in</button><p id="auth-status" role="status"></p>
+    </form></div>
+  </section>
+  <div class="workspace" id="workspace" hidden>
+    <aside class="sidebar">
+      <a class="studio-brand" href="/"><img src="/kar-logo.png" width="54" height="54" alt="KAR"><span>KAR <strong>Studio</strong></span></a>
+      <p class="eyebrow">WORKSPACE</p>
+      <nav aria-label="Workspace">
+        <button type="button" data-view="dashboard" aria-current="page">Overview</button>
+        <button type="button" data-view="jobs" hidden>Job postings</button>
+        <button type="button" data-view="clients" hidden>Client logos</button>
+        <button type="button" data-view="projects" hidden>Projects</button>
+        <button type="button" data-view="contacts" hidden>CRM contacts</button>
+        <button type="button" data-view="applications" hidden>Job applications</button>
+        <button type="button" data-view="employees" hidden>Employees</button>
+        <button type="button" data-view="users" hidden>Team access</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <a href="/" target="_blank" rel="noopener">View website ↗</a><button type="button" data-theme-toggle aria-pressed="false">Dark theme</button>
+        <button type="button" id="password-open">Change password</button><button type="button" id="logout">Sign out</button>
+      </div>
+    </aside>
+    <main class="main-panel">
+      <header class="studio-header"><div><p class="eyebrow">KAR INTERNATIONAL INFOTECH</p><h1 id="view-title">Overview</h1></div><div class="account-actions"><p id="signed-in"></p><button type="button" class="secondary" id="refresh-data">Refresh data</button></div></header>
+      <p id="workspace-status" role="status" aria-live="polite"></p>
+      <section id="overview">
+        <div class="metric-grid" id="metrics"></div>
+        <p class="empty-state" id="no-access" hidden>Your account is active. Ask your super administrator to assign access to the modules you need.</p>
+        <article class="welcome-card">
+          <p class="eyebrow">MAKE YOUR NEXT MOVE</p><h2>Your next step, all together.</h2>
+          <p>Publish approved work, follow up with clients and manage your team. Website content starts as a draft. Your workspace shows the modules assigned to your account.</p>
+          <div class="overview-actions"><button type="button" class="primary" data-view="projects" hidden>Manage projects</button><button type="button" class="secondary" data-view="contacts" hidden>Open CRM</button><button type="button" class="secondary" data-view="applications" hidden>Review applications</button></div>
+        </article>
+      </section>
+      <section id="resource-view" hidden>
+        <div class="resource-toolbar"><p id="resource-description"></p><div><label class="archive-toggle" id="archive-filter"><input type="checkbox" id="show-archived">Show archived</label><button type="button" class="primary" id="new-record">Add new</button></div></div>
+        <div id="pipeline" class="pipeline" aria-label="Filter by stage" hidden></div><div id="records" class="record-list"></div>
+      </section>
+    </main>
+  </div>
+  <dialog id="record-dialog" aria-labelledby="editor-title"><form id="record-form">
+    <div class="dialog-heading"><h2 id="editor-title">New record</h2><button type="button" class="close" data-close-dialog aria-label="Close editor">×</button></div>
+    <div id="editor-fields" class="editor-grid"></div><p id="editor-status" role="status"></p>
+    <div class="form-actions"><button class="primary" type="submit" id="save-record">Save</button><button class="secondary" type="button" data-close-dialog>Cancel</button></div>
+  </form></dialog>
+  <dialog id="password-dialog" aria-labelledby="password-title"><form id="password-form">
+    <div class="dialog-heading"><h2 id="password-title">Change password</h2><button class="close" type="button" data-close-password aria-label="Close password form">×</button></div>
+    <label>Current password<input name="currentPassword" type="password" autocomplete="current-password" required maxlength="200"></label>
+    <label>New password<input name="password" type="password" autocomplete="new-password" required minlength="12" maxlength="200"></label>
+    <p class="hint">Use at least 12 characters. This signs out other sessions.</p><p id="password-status" role="status"></p><button class="primary" type="submit">Update password</button>
+  </form></dialog>
+</body>
+</html>
